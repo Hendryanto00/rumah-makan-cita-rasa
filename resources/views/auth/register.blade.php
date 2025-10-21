@@ -12,7 +12,7 @@
 
         <!-- Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
+            <x-input-label for="name" value="Nama" />
             <x-text-input id="name"
                 class="block mt-1 w-full border-gray-300 focus:border-orange-400 focus:ring focus:ring-orange-300 rounded-md shadow-sm"
                 type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
@@ -21,16 +21,34 @@
 
         <!-- Email -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label for="email" value="Email" />
             <x-text-input id="email"
                 class="block mt-1 w-full border-gray-300 focus:border-orange-400 focus:ring focus:ring-orange-300 rounded-md shadow-sm"
                 type="email" name="email" :value="old('email')" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- Phone (optional) -->
+        <div>
+            <x-input-label for="phone" value="Telepon" />
+            <x-text-input id="phone"
+                class="block mt-1 w-full border-gray-300 focus:border-orange-400 focus:ring focus:ring-orange-300 rounded-md shadow-sm"
+                type="text" name="phone" :value="old('phone')" autocomplete="tel" />
+            <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+        </div>
+
+        <!-- Address (optional) -->
+        <div>
+            <x-input-label for="address" value="Alamat" />
+            <textarea id="address" name="address"
+                class="block mt-1 w-full border-gray-300 focus:border-orange-400 focus:ring focus:ring-orange-300 rounded-md shadow-sm"
+                rows="3">{{ old('address') }}</textarea>
+            <x-input-error :messages="$errors->get('address')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div x-data="{ show: false }" class="relative">
-            <x-input-label for="password" :value="__('Password')" />
+            <x-input-label for="password" value="Kata Sandi" />
             <input :type="show ? 'text' : 'password'" id="password" name="password"
                 class="block mt-1 w-full border-gray-300 focus:border-orange-400 focus:ring focus:ring-orange-300 rounded-md shadow-sm"
                 required autocomplete="new-password" />
@@ -56,7 +74,7 @@
 
         <!-- Confirm Password -->
         <div x-data="{ show: false }" class="relative">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+            <x-input-label for="password_confirmation" value="Konfirmasi Kata Sandi" />
             <input :type="show ? 'text' : 'password'" id="password_confirmation" name="password_confirmation"
                 class="block mt-1 w-full border-gray-300 focus:border-orange-400 focus:ring focus:ring-orange-300 rounded-md shadow-sm"
                 required autocomplete="new-password" />
@@ -84,11 +102,11 @@
         <div class="flex items-center justify-between mt-4">
             <a href="{{ route('login') }}"
                 class="underline text-sm text-gray-600 hover:text-orange-500 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400">
-                Already registered?
+                Sudah terdaftar?
             </a>
 
             <x-primary-button class="ms-3 bg-orange-500 hover:bg-orange-600 focus:ring-orange-400">
-                {{ __('Register') }}
+                Daftar
             </x-primary-button>
         </div>
     </form>

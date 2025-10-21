@@ -49,7 +49,7 @@ class UserSeeder extends Seeder
         User::firstOrCreate(
             ['email' => 'user@example.com'],
             [
-                'name' => 'User Biasa',
+                'name' => 'Atung',
                 'password' => Hash::make('password123'),
                 'role_id' => $userRole?->id,
                 'phone' => '081377788899',

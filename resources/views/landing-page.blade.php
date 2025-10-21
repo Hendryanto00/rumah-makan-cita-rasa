@@ -13,7 +13,7 @@
                     rasa autentik, dan suasana yang nyaman. Setiap suapan bukan hanya mengenyangkan, 
                     tetapi juga menghadirkan kenangan manis yang ingin Anda ulangi kembali.
                 </p>
-                <a href="{{ route('dashboard') }}"  
+                <a href="{{ route('menus.index') }}"  
                     class="bg-orange-500 text-white px-8 py-3 rounded-lg shadow-lg hover:bg-orange-600 hover:scale-105 transition transform duration-300">
                     Lihat Menu
                 </a>
@@ -85,7 +85,7 @@
             <div>
                 <h4 class="font-semibold mb-4">Navigation</h4>
                 <ul class="space-y-2 text-sm opacity-90">
-                    <li><a href="#menu" class="hover:text-yellow-300">Menu</a></li>
+                    <li><a href="{{ route('menus.index') }}" class="hover:text-yellow-300">Menu</a></li>
                     <li><a href="{{ url('/about') }}" class="hover:text-yellow-300">About Us</a></li>
                     <li><a href="{{ url('/contact') }}" class="hover:text-yellow-300">Contact Us</a></li>
                 </ul>

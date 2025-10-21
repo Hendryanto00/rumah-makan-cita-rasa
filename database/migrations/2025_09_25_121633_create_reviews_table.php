@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('menu_id')->constrained()->onDelete('cascade');
             $table->tinyInteger('rating'); // 1..5
             $table->text('comment')->nullable();
+            $table->enum('status', ['pending', 'approved', 'hidden'])->default('pending');
             $table->timestamps();
         });
     }

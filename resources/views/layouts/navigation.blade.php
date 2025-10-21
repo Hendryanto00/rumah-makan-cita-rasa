@@ -21,6 +21,11 @@
                     {{ request()->is('about') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-indigo-500' }}">
                     About
                 </a>
+                <a href="{{ route('menus.index') }}" 
+                    class="px-3 py-2 text-sm font-medium 
+                    {{ request()->is('menu*') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-indigo-500' }}">
+                    Menu
+                </a>
                 <a href="{{ url('/contact') }}" 
                     class="px-3 py-2 text-sm font-medium 
                     {{ request()->is('contact') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-indigo-500' }}">
@@ -87,6 +92,10 @@
             <a href="{{ url('/about') }}" class="block px-4 py-2 text-sm 
                 {{ request()->is('about') ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700 hover:bg-gray-50' }}">
                 About
+            </a>
+            <a href="{{ route('menus.index') }}" class="block px-4 py-2 text-sm 
+                {{ request()->is('menu*') ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700 hover:bg-gray-50' }}">
+                Menu
             </a>
             <a href="{{ url('/contact') }}" class="block px-4 py-2 text-sm 
                 {{ request()->is('contact') ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700 hover:bg-gray-50' }}">

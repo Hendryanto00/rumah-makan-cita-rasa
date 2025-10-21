@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,18 +34,30 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'phone' => ['nullable','string','max:20'],
+            'address' => ['nullable','string','max:1000'],
         ]);
 
+        // Ambil role 'user'
+        $userRole = Role::where('name', 'user')->first();
+        
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => $userRole?->id,
+            'phone' => $request->input('phone'),
+            'address' => $request->input('address'),
         ]);
-
-        event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // KIRIM EMAIL VERIFIKASI - Menggunakan method sendEmailVerificationNotification()
+        // Email verifikasi akan dikirim dengan template default Laravel
+        // Untuk mengubah kata-kata email, lihat di: vendor/laravel/framework/src/Illuminate/Auth/Notifications/VerifyEmail.php
+        // Atau buat custom notification di: app/Notifications/VerifyEmail.php
+        $user->sendEmailVerificationNotification();
+
+        return redirect()->route('verification.notice');
     }
 }

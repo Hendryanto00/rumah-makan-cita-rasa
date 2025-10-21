@@ -15,7 +15,7 @@
 
         <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label for="email" value="Email" />
             <x-text-input id="email" class="block mt-1 w-full border-gray-300 focus:border-orange-400 focus:ring focus:ring-orange-300 rounded-md shadow-sm"
                 type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
@@ -23,7 +23,7 @@
 
         <!-- Password -->
         <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <x-input-label for="password" value="Kata Sandi" />
 
             <div class="relative">
                 <x-text-input id="password" class="block mt-1 w-full border-gray-300 focus:border-orange-400 focus:ring focus:ring-orange-300 rounded-md shadow-sm pr-10"
@@ -53,7 +53,7 @@
                 <input id="remember_me" type="checkbox"
                     class="rounded border-gray-300 text-orange-500 shadow-sm focus:ring-orange-400"
                     name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+                <span class="ms-2 text-sm text-gray-600">Ingat saya</span>
             </label>
         </div>
 
@@ -62,17 +62,17 @@
             @if (Route::has('password.request'))
                 <a class="underline text-sm text-gray-600 hover:text-orange-500 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400"
                     href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
+                    Lupa kata sandi?
                 </a>
             @endif
 
             <div class="flex space-x-2">
                 <a href="{{ route('register') }}"
                     class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-md shadow-sm">
-                    {{ __('Register') }}
+                    Daftar
                 </a>
                 <x-primary-button class="bg-orange-500 hover:bg-orange-600 focus:ring-orange-400">
-                    {{ __('Log in') }}
+                    Masuk
                 </x-primary-button>
             </div>
         </div>
