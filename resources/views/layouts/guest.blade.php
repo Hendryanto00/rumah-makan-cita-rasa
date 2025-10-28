@@ -25,11 +25,11 @@
 
             <div class="relative z-10">
                 <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-100" />
+                    <x-application-logo class="w-16 h-16 sm:w-20 sm:h-20 fill-current text-gray-100" />
                 </a>
             </div>
 
-            <div class="relative z-10 w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <div class="relative z-10 w-full max-w-xs sm:max-w-sm mt-4 sm:mt-6 px-4 sm:px-6 py-3 sm:py-4 bg-white shadow-md overflow-hidden rounded-lg sm:rounded-lg">
                 {{ $slot }}
             </div>
         </div>

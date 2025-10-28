@@ -1,9 +1,9 @@
 <x-guest-layout>
     <!-- Judul -->
-    <h2 class="text-3xl font-extrabold text-center text-gray-800 mb-2">
+    <h2 class="text-2xl sm:text-3xl font-extrabold text-center text-gray-800 mb-2">
         Selamat Datang
     </h2>
-    <p class="text-center text-gray-600 text-sm mb-6">
+    <p class="text-center text-gray-600 text-xs sm:text-sm mb-4 sm:mb-6">
         Silahkan login dengan akun anda
     </p>
 
@@ -22,7 +22,7 @@
         </div>
 
         <!-- Password -->
-        <div class="mt-4">
+        <div class="mt-3 sm:mt-4">
             <x-input-label for="password" value="Kata Sandi" />
 
             <div class="relative">
@@ -48,7 +48,7 @@
         </div>
 
         <!-- Remember Me -->
-        <div class="block mt-4">
+        <div class="block mt-3 sm:mt-4">
             <label for="remember_me" class="inline-flex items-center">
                 <input id="remember_me" type="checkbox"
                     class="rounded border-gray-300 text-orange-500 shadow-sm focus:ring-orange-400"
@@ -58,7 +58,7 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex items-center justify-between mt-6">
+        <div class="flex items-center justify-between mt-4 sm:mt-6">
             @if (Route::has('password.request'))
                 <a class="underline text-sm text-gray-600 hover:text-orange-500 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400"
                     href="{{ route('password.request') }}">
@@ -68,10 +68,10 @@
 
             <div class="flex space-x-2">
                 <a href="{{ route('register') }}"
-                    class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-md shadow-sm">
+                    class="px-3 sm:px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-md shadow-sm text-sm">
                     Daftar
                 </a>
-                <x-primary-button class="bg-orange-500 hover:bg-orange-600 focus:ring-orange-400">
+                <x-primary-button class="bg-orange-500 hover:bg-orange-600 focus:ring-orange-400 px-3 sm:px-4 py-2 text-sm">
                     Masuk
                 </x-primary-button>
             </div>

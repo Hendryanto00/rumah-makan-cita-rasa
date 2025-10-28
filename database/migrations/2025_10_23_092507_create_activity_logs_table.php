@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('activity_logs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('action'); // jenis aksi (Tambah Menu, Ubah Harga, Ubah Status Pesanan, dll)
+            $table->string('target_table'); // nama tabel yang dipengaruhi
+            $table->unsignedBigInteger('target_id')->nullable(); // id data yang diubah (opsional)
+            $table->text('description'); // detail aktivitas
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('activity_logs');
+    }
+};

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
@@ -40,6 +41,9 @@ Route::get('/menu/{menu}', [MenuController::class, 'show'])->name('menus.show');
 
 require __DIR__.'/auth.php';
 
+// Midtrans notification endpoint - must be public and excluded from CSRF
+// Allow both GET (for health checks) and POST (for notifications)
+Route::match(['get', 'post'], '/midtrans/notification', [PaymentController::class,'notification']);
 
 Route::middleware(['auth'])->group(function(){
     // Admin routes
@@ -61,8 +65,19 @@ Route::middleware(['auth'])->group(function(){
     Route::middleware('verified')->group(function(){
         Route::post('/cart/add', [CartController::class,'add'])->name('cart.add');
         Route::get('/cart', [CartController::class,'index'])->name('cart.index');
+        Route::post('/cart/update/{item}', [CartController::class,'update'])->name('cart.update');
+        Route::delete('/cart/remove/{item}', [CartController::class,'remove'])->name('cart.remove');
+        Route::delete('/cart/clear', [CartController::class,'clear'])->name('cart.clear');
+        Route::get('/orders', [OrderController::class,'index'])->name('orders.index');
         Route::post('/order', [OrderController::class,'store'])->name('order.store');
-        Route::post('/midtrans/notification', [PaymentController::class,'notification']);
+        Route::get('/order/{order}/continue-payment', [OrderController::class,'continuePayment'])->name('order.continue-payment');
+        Route::get('/payment/snap', function(Request $request) {
+            $order = \App\Models\Order::with(['details.menu'])->findOrFail($request->order);
+            return view('payment.snap', [
+                'snapToken' => $request->token,
+                'order' => $order
+            ]);
+        })->name('payment.snap');
         
         // Review routes (exclude index and edit)
         Route::resource('reviews', ReviewController::class)->except(['index', 'edit']);

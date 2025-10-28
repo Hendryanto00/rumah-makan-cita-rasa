@@ -3,30 +3,30 @@
 @section('content')
 
     <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-orange-100 via-red-50 to-yellow-100 py-16">
+    <section class="bg-gradient-to-r from-orange-100 via-red-50 to-yellow-100 py-8 md:py-16">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
-                <h1 class="text-4xl font-extrabold text-gray-800 mb-2">✨ Write a Review ✨</h1>
-                <p class="text-lg text-gray-600">Bagikan pengalaman Anda tentang menu ini</p>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-800 mb-2">✨ Write a Review ✨</h1>
+                <p class="text-base md:text-lg text-gray-600">Bagikan pengalaman Anda tentang menu ini</p>
             </div>
         </div>
     </section>
 
-    <div class="py-12 bg-white">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl rounded-2xl">
-                <div class="p-8 text-gray-900">
+    <div class="py-6 md:py-12 bg-white">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl rounded-lg md:rounded-2xl">
+                <div class="p-4 md:p-6 lg:p-8 text-gray-900">
                     @if($menu)
-                        <div class="mb-8 p-6 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl border border-orange-200">
-                            <div class="flex items-center space-x-4">
+                        <div class="mb-6 md:mb-8 p-4 md:p-6 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg md:rounded-xl border border-orange-200">
+                            <div class="flex items-center space-x-3 md:space-x-4">
                         <img src="{{ asset('images/menu/' . strtolower(str_replace(' ', '-', $menu->name)) . '.jpg') }}"
                              alt="{{ $menu->name }}"
-                             class="w-16 h-16 object-cover rounded-lg"
+                             class="w-12 h-12 md:w-16 md:h-16 object-cover rounded-lg"
                              onerror="this.src='{{ asset('images/rumah-makan.jpg') }}'">
                                 <div>
-                                    <h3 class="text-xl font-bold text-gray-900">{{ $menu->name }}</h3>
-                                    <p class="text-gray-600 text-sm">{{ $menu->description }}</p>
-                                    <p class="text-orange-600 font-bold mt-1">Rp {{ number_format($menu->price, 0, ',', '.') }}</p>
+                                    <h3 class="text-lg md:text-xl font-bold text-gray-900">{{ $menu->name }}</h3>
+                                    <p class="text-gray-600 text-xs md:text-sm">{{ $menu->description }}</p>
+                                    <p class="text-orange-600 font-bold mt-1 text-sm md:text-base">Rp {{ number_format($menu->price, 0, ',', '.') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -68,21 +68,21 @@
 
                         <div class="mb-6">
                             <label for="rating" class="block text-sm font-medium text-gray-700 mb-3">Rating *</label>
-                            <div class="flex items-center space-x-3">
+                            <div class="flex items-center space-x-2 md:space-x-3">
                                 @for($i = 1; $i <= 5; $i++)
                                     <label class="cursor-pointer group">
                                         <input type="radio" name="rating" value="{{ $i }}" 
                                                class="sr-only" 
                                                {{ old('rating') == $i ? 'checked' : '' }}
                                                required>
-                                        <svg class="w-10 h-10 {{ old('rating') >= $i ? 'text-yellow-400' : 'text-gray-300' }} group-hover:text-yellow-400 transition-colors duration-200" 
+                                        <svg class="w-8 h-8 md:w-10 md:h-10 {{ old('rating') >= $i ? 'text-yellow-400' : 'text-gray-300' }} group-hover:text-yellow-400 transition-colors duration-200" 
                                              fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                         </svg>
                                     </label>
                                 @endfor
                             </div>
-                            <div class="mt-2 text-sm text-gray-500">
+                            <div class="mt-2 text-xs md:text-sm text-gray-500">
                                 <span id="rating-text">Pilih rating Anda</span>
                             </div>
                             @error('rating')
@@ -103,15 +103,15 @@
                             @enderror
                         </div>
 
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
                             <a href="{{ $menu ? route('menus.show', $menu) : route('menus.index') }}" 
-                               class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-xl transition">
-                                <i class="fas fa-arrow-left mr-2"></i>
+                               class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 md:py-3 px-4 md:px-6 rounded-lg md:rounded-xl transition text-center text-sm md:text-base">
+                                <i class="fas fa-arrow-left mr-1 md:mr-2"></i>
                                 Kembali
                             </a>
                             <button type="submit" 
-                                    class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 px-8 rounded-xl transition shadow-lg hover:shadow-xl">
-                                <i class="fas fa-star mr-2"></i>
+                                    class="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-2 md:py-3 px-6 md:px-8 rounded-lg md:rounded-xl transition shadow-lg hover:shadow-xl text-sm md:text-base">
+                                <i class="fas fa-star mr-1 md:mr-2"></i>
                                 Kirim Review
                             </button>
                         </div>

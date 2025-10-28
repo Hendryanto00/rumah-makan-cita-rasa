@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class CartItem extends Model
 {
-    protected $fillable = ['cart_id','menu_id','quantity','subtotal'];
+    protected $fillable = ['cart_id','menu_id','quantity','subtotal','notes'];
     public function menu(){ return $this->belongsTo(Menu::class); }
 }

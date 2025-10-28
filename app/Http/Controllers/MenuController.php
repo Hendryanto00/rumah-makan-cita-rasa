@@ -20,10 +20,10 @@ class MenuController extends Controller
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
                 $q->where('name', 'like', "%{$searchTerm}%")
-                  ->orWhere('description', 'like', "%{$searchTerm}%")
-                  ->orWhereHas('category', function($categoryQuery) use ($searchTerm) {
-                      $categoryQuery->where('name', 'like', "%{$searchTerm}%");
-                  });
+                ->orWhere('description', 'like', "%{$searchTerm}%")
+                ->orWhereHas('category', function($categoryQuery) use ($searchTerm) {
+                    $categoryQuery->where('name', 'like', "%{$searchTerm}%");
+                });
             });
         }
 

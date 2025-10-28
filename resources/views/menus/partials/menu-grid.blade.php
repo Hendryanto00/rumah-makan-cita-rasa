@@ -1,30 +1,30 @@
 @forelse($menus as $menu)
-    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+    <div class="group bg-white rounded-xl md:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 md:hover:-translate-y-2">
         <!-- Image Container -->
         <div class="relative overflow-hidden">
             <img src="{{ asset('images/menu/' . strtolower(str_replace(' ', '-', $menu->name)) . '.jpg') }}"
                  alt="{{ $menu->name }}"
-                 class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                 class="w-full h-48 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
                  onerror="this.src='{{ asset('images/rumah-makan.jpg') }}'">
 
             <!-- Category Badge -->
-            <div class="absolute top-4 left-4">
-                <span class="px-3 py-1 text-xs font-bold rounded-full bg-orange-500 text-white shadow-lg">
+            <div class="absolute top-2 left-2 md:top-4 md:left-4">
+                <span class="px-2 py-1 md:px-3 md:py-1 text-xs font-bold rounded-full bg-orange-500 text-white shadow-lg">
                     {{ $menu->category->name }}
                 </span>
             </div>
 
             <!-- Price Badge -->
-            <div class="absolute top-4 right-4">
-                <span class="px-3 py-1 text-sm font-bold rounded-full bg-white text-orange-600 shadow-lg">
+            <div class="absolute top-2 right-2 md:top-4 md:right-4">
+                <span class="px-2 py-1 md:px-3 md:py-1 text-xs md:text-sm font-bold rounded-full bg-white text-orange-600 shadow-lg">
                     Rp {{ number_format($menu->price, 0, ',', '.') }}
                 </span>
             </div>
         </div>
 
         <!-- Content -->
-        <div class="p-6">
-            <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+        <div class="p-4 md:p-6">
+            <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
                 {{ $menu->name }}
             </h3>
 
@@ -65,15 +65,23 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex space-x-3">
+            <div class="flex space-x-2 md:space-x-3">
                 <a href="{{ route('menus.show', $menu) }}"
-                   class="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-3 rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 text-center font-semibold shadow-lg hover:shadow-xl">
-                    <i class="fas fa-eye mr-2"></i>
-                    Lihat Detail
+                   class="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 text-center font-semibold shadow-lg hover:shadow-xl text-sm md:text-base">
+                    <i class="fas fa-eye mr-1 md:mr-2"></i>
+                    <span class="hidden sm:inline">Lihat Detail</span>
+                    <span class="sm:hidden">Detail</span>
                 </a>
-                <button class="bg-gradient-to-r from-orange-600 to-red-600 text-white px-4 py-3 rounded-xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl">
-                    <i class="fas fa-shopping-cart"></i>
-                </button>
+                
+                @auth
+                    <button type="button" onclick="openAddToCartModal({{ $menu->id }}, '{{ $menu->name }}')" class="bg-gradient-to-r from-orange-600 to-red-600 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-shopping-cart text-sm md:text-base"></i>
+                    </button>
+                @else
+                    <a href="{{ route('login') }}" class="bg-gradient-to-r from-orange-600 to-red-600 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-shopping-cart text-sm md:text-base"></i>
+                    </a>
+                @endauth
             </div>
         </div>
     </div>

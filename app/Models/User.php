@@ -71,6 +71,16 @@ class User extends Authenticatable
         return $this->hasMany(Review::class);
     }
 
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
+
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
     /**
      * Send the email verification notification.
      * 

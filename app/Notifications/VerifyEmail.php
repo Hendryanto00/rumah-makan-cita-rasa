@@ -35,7 +35,7 @@ class VerifyEmail extends Notification
     /**
      * Get the mail representation of the notification.
      * 
-     * INI ADALAH TEMPLATE EMAIL VERIFIKASI - UBAH KATA-KATA DI SINI
+     * INI ADALAH TEMPLATE EMAIL VERIFIKASI
      */
     public function toMail(object $notifiable): MailMessage
     {

@@ -40,7 +40,7 @@ class ResetPassword extends Notification
     /**
      * Get the mail representation of the notification.
      * 
-     * INI ADALAH TEMPLATE EMAIL RESET PASSWORD - UBAH KATA-KATA DI SINI
+     * INI ADALAH TEMPLATE EMAIL RESET PASSWORD
      */
     public function toMail(object $notifiable): MailMessage
     {
