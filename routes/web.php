@@ -71,6 +71,7 @@ Route::middleware(['auth'])->group(function(){
         Route::get('/orders', [OrderController::class,'index'])->name('orders.index');
         Route::post('/order', [OrderController::class,'store'])->name('order.store');
         Route::get('/order/{order}/continue-payment', [OrderController::class,'continuePayment'])->name('order.continue-payment');
+        Route::get('/order/{order}/invoice', [OrderController::class,'downloadInvoice'])->name('order.invoice');
         Route::get('/payment/snap', function(Request $request) {
             $order = \App\Models\Order::with(['details.menu'])->findOrFail($request->order);
             return view('payment.snap', [

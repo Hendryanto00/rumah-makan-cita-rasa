@@ -30,7 +30,7 @@
                                         <p class="text-sm text-gray-500">Total</p>
                                         <p class="text-xl font-bold text-orange-600">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</p>
                                     </div>
-                                    <div>
+                                    <div class="flex items-center gap-2">
                                         @if($order->status == 'paid')
                                             <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                                                 <i class="fas fa-check-circle mr-1"></i>Paid
@@ -44,6 +44,14 @@
                                                 <i class="fas fa-ellipsis-h mr-1"></i>{{ ucfirst($order->status) }}
                                             </span>
                                         @endif
+                                        
+                                        <!-- Download Invoice Button -->
+                                        <a href="{{ route('order.invoice', $order->id) }}" 
+                                           class="inline-flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition text-xs font-semibold"
+                                           title="Download Invoice PDF">
+                                            <i class="fas fa-download mr-1"></i>
+                                            Download Nota
+                                        </a>
                                     </div>
                                 </div>
                             </div>

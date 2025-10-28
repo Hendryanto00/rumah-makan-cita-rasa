@@ -9,6 +9,7 @@ use Midtrans\Snap;
 use Midtrans\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
@@ -181,5 +182,33 @@ class OrderController extends Controller
         }
         
         return view('payment.snap', compact('snapToken', 'order'));
+    }
+    
+    public function downloadInvoice(Order $order)
+    {
+        $user = auth()->user();
+        
+        // Verify this order belongs to the current user
+        if ($order->user_id !== $user->id) {
+            abort(403, 'Unauthorized access to this order');
+        }
+        
+        // Load the order with all necessary relationships
+        $order->load(['details.menu', 'user', 'payment']);
+        
+        // Generate PDF
+        $pdf = Pdf::loadView('orders.invoice', compact('order'))
+            ->setPaper('A4', 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'Arial'
+            ]);
+        
+        // Generate filename
+        $filename = 'Invoice_Order_' . $order->id . '_' . $order->created_at->format('Y-m-d') . '.pdf';
+        
+        // Return PDF download
+        return $pdf->download($filename);
     }
 }

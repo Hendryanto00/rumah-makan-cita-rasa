@@ -189,20 +189,31 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get form data
             const formData = new FormData(addToCartForm);
             
-            // Send AJAX request
+            // Send AJAX request with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => {
+                controller.abort();
+                showNotification('Request timeout. Silakan coba lagi.', 'error');
+            }, 10000); // 10 second timeout
+            
             fetch('{{ route("cart.add") }}', {
                 method: 'POST',
                 body: formData,
+                signal: controller.signal,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             })
+            .then(() => clearTimeout(timeoutId))
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     // Close modal
                     closeAddToCartModal();
+                    
+                    // Reset form
+                    addToCartForm.reset();
                     
                     // Show success message
                     showNotification(data.message, 'success');
