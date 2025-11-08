@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Menu;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -138,13 +139,23 @@ class PaymentController extends Controller
                 case 'cancel':
                 case 'refund':
                 case 'charge_back':
-                    // Payment failed
+                    // Payment failed - kembalikan stock menu
                     $payment->payment_status = 'gagal';
                     $payment->transaction_id = $notification['transaction_id'] ?? $payment->transaction_id;
                     $payment->save(); // This will include the updated payment_method if it was set above
                     
                     $order->status = 'batal';
                     $order->save();
+                    
+                    // Kembalikan stock menu yang sudah dikurangi saat order dibuat
+                    $order->load('details.menu');
+                    foreach ($order->details as $detail) {
+                        $menu = Menu::find($detail->menu_id);
+                        if ($menu) {
+                            $menu->stock += $detail->quantity;
+                            $menu->save();
+                        }
+                    }
                     
                     Log::info('Payment failed', ['order_id' => $orderId, 'status' => $transactionStatus]);
                     break;
@@ -162,8 +173,23 @@ class PaymentController extends Controller
                 $payment->payment_status = 'gagal';
                 $payment->save(); // This will include the updated payment_method if it was set above
                 
+                // Simpan status order sebelumnya untuk cek apakah stock sudah dikembalikan
+                $previousOrderStatus = $order->status;
                 $order->status = 'batal';
                 $order->save();
+                
+                // Kembalikan stock menu jika belum dikembalikan (jika order status sebelumnya bukan 'batal')
+                if ($previousOrderStatus !== 'batal' && 
+                    !in_array($transactionStatus, ['deny', 'expire', 'cancel', 'refund', 'charge_back'])) {
+                    $order->load('details.menu');
+                    foreach ($order->details as $detail) {
+                        $menu = Menu::find($detail->menu_id);
+                        if ($menu) {
+                            $menu->stock += $detail->quantity;
+                            $menu->save();
+                        }
+                    }
+                }
                 
                 Log::info('Payment denied by fraud status', ['order_id' => $orderId]);
             }

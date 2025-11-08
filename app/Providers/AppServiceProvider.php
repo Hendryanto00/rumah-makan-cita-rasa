@@ -24,5 +24,10 @@ class AppServiceProvider extends ServiceProvider
     {
         // Register Review Policy
         Gate::policy(Review::class, ReviewPolicy::class);
+        
+        // Define admin-only gate
+        Gate::define('admin-only', function ($user) {
+            return $user->role && $user->role->name === 'admin';
+        });
     }
 }

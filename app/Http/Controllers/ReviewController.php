@@ -42,11 +42,12 @@ class ReviewController extends Controller
             'user_id' => Auth::id(),
             'menu_id' => $request->menu_id,
             'rating' => $request->rating,
-            'comment' => $request->comment
+            'comment' => $request->comment,
+            'status' => 'pending' // Default status pending, perlu approval admin
         ]);
 
         return redirect()->route('menus.show', $request->menu_id)
-            ->with('success', 'Review berhasil ditambahkan!');
+            ->with('success', 'Review berhasil ditambahkan! Review Anda sedang menunggu persetujuan admin.');
     }
 
     /**
@@ -72,10 +73,11 @@ class ReviewController extends Controller
         $review->update([
             'rating' => $request->rating,
             'comment' => $request->comment,
+            'status' => 'pending' // Set kembali ke pending setelah edit, perlu approval ulang
         ]);
 
         return redirect()->back()
-            ->with('success', 'Review berhasil diperbarui!');
+            ->with('success', 'Review berhasil diperbarui! Review Anda sedang menunggu persetujuan admin.');
     }
 
     /**
@@ -97,6 +99,7 @@ class ReviewController extends Controller
     public function getMenuReviews(Menu $menu)
     {
         $reviews = $menu->reviews()
+            ->where('status', 'approved')
             ->with('user')
             ->latest()
             ->paginate(5);

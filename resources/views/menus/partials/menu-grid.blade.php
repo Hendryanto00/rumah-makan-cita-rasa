@@ -1,46 +1,83 @@
 @forelse($menus as $menu)
-    <div class="group bg-white rounded-xl md:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 md:hover:-translate-y-2">
+    <div class="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 border border-gray-100" data-menu-id="{{ $menu->id }}">
         <!-- Image Container -->
-        <div class="relative overflow-hidden">
-            <img src="{{ asset('images/menu/' . strtolower(str_replace(' ', '-', $menu->name)) . '.jpg') }}"
+        <div class="relative overflow-hidden h-56">
+            @php
+                $slug = \Illuminate\Support\Str::slug($menu->name);
+                $possible = ['jpg','jpeg','png','webp'];
+                $found = null;
+                foreach ($possible as $ext) {
+                    if (file_exists(public_path("images/menu/{$slug}.{$ext}"))) { $found = $ext; break; }
+                }
+                $imageUrl = $found ? asset("images/menu/{$slug}.{$found}") : asset('images/rumah-makan.jpg');
+            @endphp
+            <img src="{{ $imageUrl }}"
                  alt="{{ $menu->name }}"
-                 class="w-full h-48 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-                 onerror="this.src='{{ asset('images/rumah-makan.jpg') }}'">
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 {{ $menu->stock <= 0 ? 'grayscale opacity-75' : '' }}">
+            
+            <!-- Overlay Gradient on Hover -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
             <!-- Category Badge -->
-            <div class="absolute top-2 left-2 md:top-4 md:left-4">
-                <span class="px-2 py-1 md:px-3 md:py-1 text-xs font-bold rounded-full bg-orange-500 text-white shadow-lg">
+            <div class="absolute top-3 left-3 z-10">
+                <span class="px-3 py-1.5 text-xs font-bold rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-xl backdrop-blur-sm">
                     {{ $menu->category->name }}
                 </span>
             </div>
 
             <!-- Price Badge -->
-            <div class="absolute top-2 right-2 md:top-4 md:right-4">
-                <span class="px-2 py-1 md:px-3 md:py-1 text-xs md:text-sm font-bold rounded-full bg-white text-orange-600 shadow-lg">
-                    Rp {{ number_format($menu->price, 0, ',', '.') }}
-                </span>
+            <div class="absolute top-3 right-3 z-10">
+                <div class="px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-sm shadow-xl border border-white/50">
+                    <span class="text-sm font-bold text-orange-600 menu-price">
+                        Rp {{ number_format($menu->price, 0, ',', '.') }}
+                    </span>
+                </div>
             </div>
+            
+            <!-- Stock Badge -->
+            @if($menu->stock > 0)
+                @if($menu->stock <= 10)
+                    <div class="absolute bottom-3 right-3 z-10 stock-badge">
+                        <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-yellow-500/90 backdrop-blur-sm text-white shadow-lg">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>Menipis
+                        </span>
+                    </div>
+                @else
+                    <div class="absolute bottom-3 right-3 z-10 stock-badge">
+                        <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-green-500/90 backdrop-blur-sm text-white shadow-lg">
+                            <i class="fas fa-check-circle mr-1"></i>Tersedia
+                        </span>
+                    </div>
+                @endif
+            @else
+                <div class="absolute bottom-3 right-3 z-10 stock-badge">
+                    <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-red-500/90 backdrop-blur-sm text-white shadow-lg">
+                        <i class="fas fa-times-circle mr-1"></i>Habis
+                    </span>
+                </div>
+            @endif
         </div>
 
         <!-- Content -->
-        <div class="p-4 md:p-6">
-            <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+        <div class="p-5">
+            <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors duration-300 line-clamp-1">
                 {{ $menu->name }}
             </h3>
 
-            <p class="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+            <p class="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed min-h-[2.5rem]">
                 {{ $menu->description }}
             </p>
 
-            <!-- Rating -->
-            <div class="flex items-center justify-between mb-4">
+            <!-- Rating & Stock Info -->
+            <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
                 @php
-                    $averageRating = $menu->reviews()->avg('rating');
-                    $reviewCount = $menu->reviews()->count();
+                    // Hanya hitung review yang sudah approved
+                    $averageRating = $menu->reviews()->where('status', 'approved')->avg('rating');
+                    $reviewCount = $menu->reviews()->where('status', 'approved')->count();
                 @endphp
                 @if($averageRating)
-                    <div class="flex items-center">
-                        <div class="flex items-center mr-2">
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center">
                             @for($i = 1; $i <= 5; $i++)
                                 @if($i <= floor($averageRating))
                                     <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -53,47 +90,63 @@
                                 @endif
                             @endfor
                         </div>
-                        <span class="text-sm text-gray-600 font-medium">{{ number_format($averageRating, 1) }} ({{ $reviewCount }} review)</span>
+                        <span class="text-xs text-gray-600 font-medium">{{ number_format($averageRating, 1) }}</span>
+                        <span class="text-xs text-gray-400">({{ $reviewCount }})</span>
                     </div>
                 @else
-                    <span class="text-sm text-gray-400">Belum ada review</span>
+                    <span class="text-xs text-gray-400 italic">Belum ada review</span>
                 @endif
-
-                <span class="text-sm text-gray-500">
-                    Stock: {{ $menu->stock }}
-                </span>
+                
+                <!-- Stock Info -->
+                <div class="text-xs text-gray-600 stock-info-text">
+                    @if($menu->stock > 0)
+                        <span class="text-green-600 font-semibold">
+                            <i class="fas fa-box mr-1"></i>Stok: {{ $menu->stock }}
+                        </span>
+                    @else
+                        <span class="text-red-600 font-semibold">
+                            <i class="fas fa-box-open mr-1"></i>Stok Habis
+                        </span>
+                    @endif
+                </div>
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex space-x-2 md:space-x-3">
+            <div class="flex gap-2">
                 <a href="{{ route('menus.show', $menu) }}"
-                   class="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 text-center font-semibold shadow-lg hover:shadow-xl text-sm md:text-base">
-                    <i class="fas fa-eye mr-1 md:mr-2"></i>
-                    <span class="hidden sm:inline">Lihat Detail</span>
-                    <span class="sm:hidden">Detail</span>
+                   class="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2.5 rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 text-center font-semibold text-sm shadow-md hover:shadow-lg transform hover:scale-[1.02] flex items-center justify-center gap-2">
+                    <i class="fas fa-eye"></i>
+                    <span>Detail</span>
                 </a>
                 
                 @auth
-                    <button type="button" onclick="openAddToCartModal({{ $menu->id }}, '{{ $menu->name }}')" class="bg-gradient-to-r from-orange-600 to-red-600 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl">
-                        <i class="fas fa-shopping-cart text-sm md:text-base"></i>
+                    <button type="button" onclick="openAddToCartModal({{ $menu->id }}, '{{ $menu->name }}')" 
+                            class="px-4 py-2.5 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed {{ $menu->stock <= 0 ? 'opacity-50 cursor-not-allowed' : '' }}"
+                            {{ $menu->stock <= 0 ? 'disabled' : '' }}>
+                        <i class="fas fa-shopping-cart"></i>
                     </button>
                 @else
-                    <a href="{{ route('login') }}" class="bg-gradient-to-r from-orange-600 to-red-600 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl">
-                        <i class="fas fa-shopping-cart text-sm md:text-base"></i>
+                    <a href="{{ route('login') }}" 
+                       class="px-4 py-2.5 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02] flex items-center justify-center">
+                        <i class="fas fa-shopping-cart"></i>
                     </a>
                 @endauth
             </div>
         </div>
     </div>
 @empty
-    <div class="col-span-full text-center py-16">
+    <div class="col-span-full text-center py-20">
         <div class="max-w-md mx-auto">
-            <svg class="mx-auto h-20 w-20 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.709M15 6.75a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">Menu tidak ditemukan</h3>
-            <p class="text-gray-500 mb-6">Coba ubah kata kunci pencarian atau filter kategori Anda</p>
-            <a href="{{ route('menus.index') }}" class="inline-flex items-center px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition">
+            <div class="mb-6">
+                <div class="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-orange-100 to-red-100 mb-4">
+                    <svg class="w-16 h-16 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Menu tidak ditemukan</h3>
+            <p class="text-gray-600 mb-8 text-lg">Coba ubah kata kunci pencarian atau filter kategori Anda untuk menemukan menu yang Anda cari</p>
+            <a href="{{ route('menus.index') }}" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold">
                 <i class="fas fa-refresh mr-2"></i>
                 Lihat Semua Menu
             </a>

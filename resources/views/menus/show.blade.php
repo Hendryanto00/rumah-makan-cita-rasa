@@ -4,20 +4,62 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="bg-gradient-to-r from-orange-100 via-red-50 to-yellow-100 py-8 md:py-16">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="relative bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 py-16 md:py-24 overflow-hidden">
+    <!-- Decorative Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-white opacity-10 rounded-full"></div>
+        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-white opacity-10 rounded-full"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white opacity-5 rounded-full"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center">
-            <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-800 mb-2">{{ $menu->name }}</h1>
-            <p class="text-base md:text-lg text-gray-600">{{ $menu->category->name }}</p>
+            <div class="inline-block mb-4 animate-bounce">
+                <span class="text-4xl md:text-6xl">🍽️</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-4 drop-shadow-lg">
+                {{ $menu->name }}
+            </h1>
+            <p class="text-lg md:text-xl text-orange-50 mb-8 max-w-2xl mx-auto">
+                {{ $menu->category->name }}
+            </p>
+            <div class="flex flex-wrap justify-center gap-2 text-sm md:text-base">
+                <span class="px-4 py-2 bg-white bg-opacity-20 backdrop-blur-sm text-white rounded-full font-medium">
+                    <i class="fas fa-tag mr-2"></i>{{ $menu->category->name }}
+                </span>
+                @if($menu->stock > 0)
+                    <span class="px-4 py-2 bg-white bg-opacity-20 backdrop-blur-sm text-white rounded-full font-medium">
+                        <i class="fas fa-box mr-2"></i>Stok: {{ $menu->stock }}
+                    </span>
+                @endif
+                @php
+                    $averageRating = $menu->reviews()->where('status', 'approved')->avg('rating');
+                    $reviewCount = $menu->reviews()->where('status', 'approved')->count();
+                @endphp
+                @if($averageRating)
+                    <span class="px-4 py-2 bg-white bg-opacity-20 backdrop-blur-sm text-white rounded-full font-medium">
+                        <i class="fas fa-star mr-2"></i>{{ number_format($averageRating, 1) }}/5 ({{ $reviewCount }} review)
+                    </span>
+                @endif
+            </div>
         </div>
+    </div>
+    
+    <!-- Wave Separator -->
+    <div class="absolute bottom-0 left-0 right-0">
+        <svg class="w-full h-12 md:h-20" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="white">
+            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25"></path>
+            <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5"></path>
+            <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"></path>
+        </svg>
     </div>
 </section>
 
-<div class="py-6 md:py-12 bg-white">
+<div class="py-6 md:py-12 bg-white -mt-1">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Back Button -->
         <div class="mb-4 md:mb-6">
-            <a href="{{ route('menus.index') }}" class="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors">
+            <a href="{{ route('menus.index') }}" class="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors font-medium">
                 <i class="fas fa-arrow-left mr-2"></i>
                 <span class="text-sm md:text-base font-medium">Kembali ke Menu</span>
             </a>
@@ -26,11 +68,19 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
             <!-- Menu Image & Info -->
             <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                <div class="aspect-w-16 aspect-h-9">
-                    <img src="{{ asset('images/menu/' . strtolower(str_replace(' ', '-', $menu->name)) . '.jpg') }}" 
-                         alt="{{ $menu->name }}"
-                         class="w-full h-48 md:h-64 object-cover"
-                         onerror="this.src='{{ asset('images/rumah-makan.jpg') }}'">
+                <div>
+                    @php
+                        $slug = \Illuminate\Support\Str::slug($menu->name);
+                        $possible = ['jpg','jpeg','png','webp'];
+                        $found = null;
+                        foreach ($possible as $ext) {
+                            if (file_exists(public_path("images/menu/{$slug}.{$ext}"))) { $found = $ext; break; }
+                        }
+                        $imageUrl = $found ? asset("images/menu/{$slug}.{$found}") : asset('images/rumah-makan.jpg');
+                    @endphp
+                    <img src="{{ $imageUrl }}" 
+                        alt="{{ $menu->name }}"
+                        class="w-full h-56 md:h-72 lg:h-96 object-cover">
                 </div>
                 
                 <div class="p-4 md:p-6">
@@ -205,8 +255,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             })
-            .then(() => clearTimeout(timeoutId))
-            .then(response => response.json())
+            .then(response => {
+                clearTimeout(timeoutId);
+                // Check if response is ok
+                if (!response.ok) {
+                    // Try to parse JSON error response
+                    return response.json().catch(() => {
+                        // If not JSON, throw with status text
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }).then(data => {
+                        throw new Error(data.message || 'Terjadi kesalahan saat menambahkan ke keranjang');
+                    });
+                }
+                // Parse JSON response
+                return response.json().catch(() => {
+                    throw new Error('Invalid response format from server');
+                });
+            })
             .then(data => {
                 if (data.success) {
                     // Close modal
@@ -219,14 +284,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     showNotification(data.message, 'success');
                     
                     // Update cart count if cart icon exists
-                    updateCartCount(data.cart_count);
+                    if (data.cart_count !== undefined) {
+                        updateCartCount(data.cart_count);
+                    }
                 } else {
                     showNotification(data.message || 'Gagal menambahkan ke keranjang', 'error');
                 }
             })
             .catch(error => {
+                clearTimeout(timeoutId);
                 console.error('Add to cart error:', error);
-                showNotification('Terjadi kesalahan saat menambahkan ke keranjang', 'error');
+                if (error.name === 'AbortError') {
+                    showNotification('Request timeout. Silakan coba lagi.', 'error');
+                } else {
+                    showNotification(error.message || 'Terjadi kesalahan saat menambahkan ke keranjang', 'error');
+                }
             })
             .finally(() => {
                 // Hide loading state
@@ -281,6 +353,149 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Real-time review updates polling
+    let lastReviewCheck = new Date().toISOString();
+    let reviewUpdateInterval;
+    const menuId = {{ $menu->id }};
+    const currentUserId = {{ auth()->check() ? auth()->id() : 'null' }};
+    
+    function checkReviewUpdates() {
+        fetch(`{{ route('api.review-updates') }}?menu_id=${menuId}&last_check=${encodeURIComponent(lastReviewCheck)}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Handle deleted reviews
+                if (data.deleted_review_ids && data.deleted_review_ids.length > 0) {
+                    data.deleted_review_ids.forEach(reviewId => {
+                        const reviewElement = document.querySelector(`[data-review-id="${reviewId}"]`);
+                        if (reviewElement) {
+                            reviewElement.style.transition = 'opacity 0.3s';
+                            reviewElement.style.opacity = '0';
+                            setTimeout(() => {
+                                reviewElement.remove();
+                                // Reload page to update rating summary
+                                window.location.reload();
+                            }, 300);
+                        }
+                    });
+                }
+                
+                // Handle updated/new reviews
+                if (data.reviews && data.reviews.length > 0) {
+                    data.reviews.forEach(review => {
+                        updateOrAddReview(review);
+                    });
+                    
+                    // Reload page to update rating summary if there are new approved reviews
+                    const hasNewApproved = data.reviews.some(r => r.status === 'approved');
+                    if (hasNewApproved) {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                }
+                
+                // Update last check time
+                if (data.timestamp) {
+                    lastReviewCheck = data.timestamp;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Review update check error:', error);
+        });
+    }
+    
+    function updateOrAddReview(review) {
+        const reviewElement = document.querySelector(`[data-review-id="${review.id}"]`);
+        
+        if (reviewElement) {
+            // Update existing review
+            // Update status badge if it's user's own review
+            if (review.is_own_review && review.status === 'pending') {
+                let statusBadge = reviewElement.querySelector('.review-status-badge');
+                if (!statusBadge) {
+                    const nameElement = reviewElement.querySelector('h4');
+                    if (nameElement) {
+                        const badge = document.createElement('span');
+                        badge.className = 'review-status-badge px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 flex items-center gap-1 ml-3';
+                        badge.innerHTML = '<i class="fas fa-clock text-xs"></i>Menunggu Persetujuan';
+                        nameElement.parentElement.appendChild(badge);
+                    }
+                }
+            } else if (review.status === 'approved') {
+                // Remove pending badge if approved
+                const statusBadge = reviewElement.querySelector('.review-status-badge');
+                if (statusBadge) {
+                    statusBadge.remove();
+                }
+            }
+            
+            // Update status message
+            const statusMessage = reviewElement.querySelector('.review-status-message');
+            if (statusMessage) {
+                if (review.status === 'pending' && review.is_own_review) {
+                    statusMessage.innerHTML = `
+                        <p class="text-xs text-yellow-600 italic">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Review Anda sedang menunggu persetujuan admin
+                        </p>
+                    `;
+                    statusMessage.style.display = 'block';
+                } else if (review.status === 'approved') {
+                    statusMessage.style.display = 'none';
+                } else if (review.status === 'hidden' && review.is_own_review) {
+                    statusMessage.innerHTML = `
+                        <p class="text-xs text-red-600 italic">
+                            <i class="fas fa-eye-slash mr-1"></i>
+                            Review Anda telah disembunyikan oleh admin
+                        </p>
+                    `;
+                    statusMessage.style.display = 'block';
+                }
+            }
+            
+            // If review is hidden and not user's own, hide it
+            if (review.status === 'hidden' && !review.is_own_review) {
+                reviewElement.style.transition = 'opacity 0.3s';
+                reviewElement.style.opacity = '0';
+                setTimeout(() => {
+                    reviewElement.remove();
+                }, 300);
+            }
+        } else {
+            // Add new review if it's approved or user's own pending review
+            if (review.status === 'approved' || (review.status === 'pending' && review.is_own_review)) {
+                // Reload page to show new review with proper formatting
+                window.location.reload();
+            }
+        }
+    }
+    
+    // Start polling every 5 seconds
+    if (typeof reviewUpdateInterval === 'undefined') {
+        reviewUpdateInterval = setInterval(checkReviewUpdates, 5000);
+    }
+    
+    // Stop polling when page is hidden
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            if (reviewUpdateInterval) {
+                clearInterval(reviewUpdateInterval);
+            }
+        } else {
+            if (typeof reviewUpdateInterval === 'undefined') {
+                reviewUpdateInterval = setInterval(checkReviewUpdates, 5000);
+            }
+        }
+    });
 });
 </script>
 @endauth

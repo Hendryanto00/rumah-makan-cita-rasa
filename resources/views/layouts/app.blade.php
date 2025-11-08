@@ -5,8 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>Rumah Makan Cita Rasa</title>
-        <link rel="icon" type="image/png" href="{{ asset('images/logo/logo1.png') }}">
+        <title>@yield('title', 'Rumah Makan Cita Rasa')</title>
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo/Logo1.png') }}">
+        <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo/Logo1.png') }}">
+        <link rel="apple-touch-icon" href="{{ asset('images/logo/Logo1.png') }}">
 
 
         <!-- Fonts -->
@@ -19,11 +21,12 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        @stack('styles')
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
-
+        @include('layouts.navigation')
+        <div class="min-h-screen bg-gray-100" style="padding-top: 64px;">
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-white shadow">
@@ -38,5 +41,7 @@
                 @yield('content')
             </main>
         </div>
+        
+        @stack('scripts')
     </body>
 </html>

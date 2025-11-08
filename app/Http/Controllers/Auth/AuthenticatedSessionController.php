@@ -27,9 +27,17 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        
+        $user = $request->user();
+        
         // Jika belum verifikasi, arahkan ke halaman verifikasi
-        if (! $request->user()->hasVerifiedEmail()) {
+        if (! $user->hasVerifiedEmail()) {
             return redirect()->route('verification.notice');
+        }
+
+        // Redirect admin ke dashboard admin
+        if ($user->role && $user->role->name === 'admin') {
+            return redirect()->intended(route('admin.dashboard'));
         }
 
         return redirect()->intended('/');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Menu;
 use Midtrans\Snap;
 use Midtrans\Config;
 use Illuminate\Support\Facades\DB;
@@ -16,16 +17,19 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        $status = $request->query('status'); // pending|paid|diproses|selesai|batal|all|null
         
-        // Show orders that are either pending payment or successfully paid
-        // Exclude failed/cancelled orders
-        $orders = Order::where('user_id', $user->id)
-            ->whereHas('payment', function($query) {
-                $query->whereIn('payment_status', ['pending', 'sukses']);
-            })
+        $ordersQuery = Order::where('user_id', $user->id)
             ->with(['details.menu', 'payment'])
-            ->latest()
-            ->paginate(10);
+            ->latest();
+
+        if ($status && $status !== 'all') {
+            $ordersQuery->where('status', $status);
+        }
+        
+        // Optional: if user hanya ingin melihat yang punya pembayaran valid
+        // tetap tampilkan semuanya karena history mencakup seluruh status
+        $orders = $ordersQuery->paginate(10)->withQueryString();
         
         return view('orders.index', compact('orders'));
     }
@@ -44,6 +48,19 @@ class OrderController extends Controller
 
         DB::beginTransaction();
         try {
+            // Validasi stock sebelum membuat order
+            foreach ($cart->items as $ci) {
+                $menu = Menu::findOrFail($ci->menu_id);
+                if ($menu->stock < $ci->quantity) {
+                    DB::rollBack();
+                    $message = "Stok menu '{$menu->name}' tidak cukup. Stok tersedia: {$menu->stock}, dibutuhkan: {$ci->quantity}";
+                    if ($request->expectsJson()) {
+                        return response()->json(['message' => $message], 400);
+                    }
+                    return back()->with('error', $message);
+                }
+            }
+
             $total = $cart->items->sum('subtotal');
             $order = Order::create([
                 'user_id' => $user->id,
@@ -52,6 +69,12 @@ class OrderController extends Controller
             ]);
 
             foreach ($cart->items as $ci) {
+                $menu = Menu::findOrFail($ci->menu_id);
+                
+                // Kurangi stock menu
+                $menu->stock -= $ci->quantity;
+                $menu->save();
+                
                 $order->details()->create([
                     'menu_id' => $ci->menu_id,
                     'quantity' => $ci->quantity,
@@ -188,8 +211,9 @@ class OrderController extends Controller
     {
         $user = auth()->user();
         
-        // Verify this order belongs to the current user
-        if ($order->user_id !== $user->id) {
+        // Allow admin to access any order invoice, or verify this order belongs to the current user
+        $isAdmin = $user->role && $user->role->name === 'admin';
+        if (!$isAdmin && $order->user_id !== $user->id) {
             abort(403, 'Unauthorized access to this order');
         }
         
@@ -210,5 +234,15 @@ class OrderController extends Controller
         
         // Return PDF download
         return $pdf->download($filename);
+    }
+
+    public function show(Order $order)
+    {
+        $user = auth()->user();
+        if ($order->user_id !== $user->id) {
+            abort(403, 'Unauthorized access to this order');
+        }
+        $order->load(['details.menu', 'payment', 'user']);
+        return view('orders.show', compact('order'));
     }
 }

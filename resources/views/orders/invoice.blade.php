@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Nota Pesanan #{{ $order->id }}</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo/Logo1.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo/Logo1.png') }}">
     <style>
         * {
             margin: 0;

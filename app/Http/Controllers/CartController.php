@@ -32,18 +32,47 @@ class CartController extends Controller
             $cart = $user->cart ?? Cart::create(['user_id' => $user->id]);
 
             $menu = Menu::findOrFail($request->menu_id);
-            $quantity = (int) $request->quantity ?? 1;
+            $quantity = (int) ($request->quantity ?? 1);
             $notes = $request->notes ?? '';
+            
+            // Validasi quantity
+            if ($quantity <= 0) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Jumlah harus lebih dari 0'
+                    ], 400);
+                }
+                return back()->with('error', 'Jumlah harus lebih dari 0');
+            }
+            
+            // Validasi stock
+            $existingItem = $cart->items()->where('menu_id', $menu->id)->first();
+            $existingQuantity = $existingItem ? $existingItem->quantity : 0;
+            $totalQuantityNeeded = $existingQuantity + $quantity;
+            
+            if ($menu->stock < $totalQuantityNeeded) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Stok menu '{$menu->name}' tidak cukup. Stok tersedia: {$menu->stock}"
+                    ], 400);
+                }
+                return back()->with('error', "Stok menu '{$menu->name}' tidak cukup");
+            }
+            
             $subtotal = $menu->price * $quantity;
 
             // Cek apakah item sudah ada di cart
-            $item = $cart->items()->where('menu_id', $menu->id)->first();
-
-            if ($item) {
+            if ($existingItem) {
                 // Update quantity dan subtotal
-                $item->quantity += $quantity;
-                $item->subtotal += $subtotal;
-                $item->save();
+                $existingItem->quantity += $quantity;
+                $existingItem->subtotal += $subtotal;
+                // Update notes if provided
+                if ($notes) {
+                    $existingItem->notes = $notes;
+                }
+                $existingItem->save();
             } else {
                 // Buat item baru
                 $cart->items()->create([
@@ -54,21 +83,35 @@ class CartController extends Controller
                 ]);
             }
 
-            // Get updated cart count
+            // Refresh cart to get updated count
+            $cart->refresh();
             $cartCount = $cart->items()->sum('quantity');
 
-            if ($request->ajax()) {
+            if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Menu berhasil ditambahkan ke keranjang',
                     'cart_count' => $cartCount,
                     'menu_name' => $menu->name
-                ]);
+                ], 200);
             }
 
             return back()->with('success', 'Ditambahkan ke keranjang');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Menu tidak ditemukan'
+                ], 404);
+            }
+            return back()->with('error', 'Menu tidak ditemukan');
         } catch (\Exception $e) {
-            if ($request->ajax()) {
+            \Log::error('Add to cart error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all()
+            ]);
+            
+            if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Gagal menambahkan ke keranjang: ' . $e->getMessage()
