@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Services\ActivityLogger;
 
 class OrderController extends Controller
 {
@@ -60,9 +61,18 @@ class OrderController extends Controller
             'status' => 'required|in:pending,paid,diproses,selesai,batal'
         ]);
 
+        $oldStatus = $order->status;
         $order->update([
             'status' => $request->status
         ]);
+
+        // Log activity
+        ActivityLogger::log(
+            'Ubah Status Pesanan',
+            'orders',
+            $order->id,
+            sprintf('Mengubah status pesanan dari "%s" menjadi "%s".', $oldStatus, $order->status)
+        );
 
         return redirect()
             ->route('admin.orders.show', $order)

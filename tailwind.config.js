@@ -18,4 +18,14 @@ export default {
     },
 
     plugins: [forms],
+    
+    safelist: [
+        {
+            pattern: /bg-(yellow|blue|indigo|green|red|gray)-(100|800)/,
+            variants: ['hover'],
+        },
+        {
+            pattern: /text-(yellow|blue|indigo|green|red|gray)-(100|800)/,
+        },
+    ],
 };

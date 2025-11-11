@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {
@@ -53,7 +55,15 @@ class CategoryController extends Controller
             'description.max' => 'Deskripsi maksimal 1000 karakter.',
         ]);
 
-        Category::create($validated);
+        $category = Category::create($validated);
+
+        // Log activity
+        ActivityLogger::log(
+            'Tambah Kategori',
+            'categories',
+            $category->id,
+            sprintf('Menambahkan kategori "%s".', $category->name)
+        );
 
         return redirect()
             ->route('admin.categories.index')
@@ -97,6 +107,10 @@ class CategoryController extends Controller
 
         DB::beginTransaction();
         try {
+            $original = [
+                'name' => $category->name,
+                'description' => $category->description,
+            ];
             // If moving selected menus to another category
             if ($request->has('move_menus_to') && $request->move_menus_to && $request->has('selected_menus')) {
                 $targetCategoryId = $request->move_menus_to;
@@ -111,6 +125,19 @@ class CategoryController extends Controller
                 if (count($menusInCategory) > 0) {
                     Menu::whereIn('id', $menusInCategory)
                         ->update(['category_id' => $targetCategoryId]);
+                    
+                    $targetCategory = Category::find($targetCategoryId);
+                    ActivityLogger::log(
+                        'Pindah Menu',
+                        'menus',
+                        null,
+                        sprintf(
+                            'Memindahkan %d menu dari kategori "%s" ke kategori "%s".',
+                            count($menusInCategory),
+                            $category->name,
+                            $targetCategory ? $targetCategory->name : '-'
+                        )
+                    );
                 }
             }
 
@@ -121,6 +148,23 @@ class CategoryController extends Controller
             ]);
 
             DB::commit();
+
+            // Log activity perubahan kategori
+            $changes = [];
+            if ($original['name'] !== $category->name) {
+                $changes[] = sprintf('nama dari "%s" menjadi "%s"', $original['name'], $category->name);
+            }
+            if ((string)($original['description'] ?? '') !== (string)($category->description ?? '')) {
+                $changes[] = 'deskripsi';
+            }
+            if (!empty($changes)) {
+                ActivityLogger::log(
+                    'Ubah Kategori',
+                    'categories',
+                    $category->id,
+                    sprintf('Mengubah kategori "%s": %s.', $category->name, implode(', ', $changes))
+                );
+            }
 
             return redirect()
                 ->route('admin.categories.index')
@@ -146,7 +190,15 @@ class CategoryController extends Controller
                 ->with('error', "Kategori tidak dapat dihapus karena masih memiliki {$menuCount} menu. Pindahkan atau hapus menu terlebih dahulu.");
         }
 
+        $snapshot = ['id' => $category->id, 'name' => $category->name];
         $category->delete();
+
+        ActivityLogger::log(
+            'Hapus Kategori',
+            'categories',
+            $snapshot['id'],
+            sprintf('Menghapus kategori "%s".', $snapshot['name'])
+        );
 
         return redirect()
             ->route('admin.categories.index')

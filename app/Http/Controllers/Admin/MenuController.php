@@ -8,6 +8,8 @@ use App\Models\Menu;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use App\Models\ActivityLog;
+use Illuminate\Support\Facades\Auth;
 
 class MenuController extends Controller
 {
@@ -93,6 +95,21 @@ class MenuController extends Controller
             $request->file('image')->move($directory, $filename);
         }
 
+        // Log activity
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Tambah Menu',
+            'target_table' => 'menus',
+            'target_id' => $menu->id,
+            'description' => sprintf(
+                'Menambahkan menu "%s" dengan harga Rp %s, stok %s, kategori %s.',
+                $menu->name,
+                number_format($menu->price, 0, ',', '.'),
+                number_format($menu->stock, 0, ',', '.'),
+                $menu->category ? $menu->category->name : '-'
+            ),
+        ]);
+
         $page = $request->query('page', 1);
         return redirect()->route('admin.menus.index', ['page' => $page])->with('success', 'Menu berhasil dibuat');
     }
@@ -119,6 +136,18 @@ class MenuController extends Controller
      */
     public function update(Request $request, Menu $menu)
     {
+        $menu->load('category');
+        $originalData = [
+            'id' => $menu->id,
+            'name' => $menu->name,
+            'price' => $menu->price,
+            'stock' => $menu->stock,
+            'category_id' => $menu->category_id,
+            'category_name' => $menu->category ? $menu->category->name : null,
+            'is_active' => $menu->is_active,
+            'description' => $menu->description,
+        ];
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -168,6 +197,59 @@ class MenuController extends Controller
             }
         }
 
+        $menu->refresh()->load('category');
+
+        $changes = [];
+        if ($originalData['name'] !== $menu->name) {
+            $changes[] = sprintf('nama dari "%s" menjadi "%s"', $originalData['name'], $menu->name);
+        }
+        if ($originalData['price'] != $menu->price) {
+            $changes[] = sprintf(
+                'harga dari Rp %s menjadi Rp %s',
+                number_format($originalData['price'], 0, ',', '.'),
+                number_format($menu->price, 0, ',', '.')
+            );
+        }
+        if ($originalData['stock'] != $menu->stock) {
+            $changes[] = sprintf(
+                'stok dari %s menjadi %s',
+                number_format($originalData['stock'], 0, ',', '.'),
+                number_format($menu->stock, 0, ',', '.')
+            );
+        }
+        if ($originalData['category_id'] != $menu->category_id) {
+            $originalCategory = Category::find($originalData['category_id']);
+            $changes[] = sprintf(
+                'kategori dari "%s" menjadi "%s"',
+                $originalCategory ? $originalCategory->name : ($originalData['category_name'] ?? '-'),
+                $menu->category ? $menu->category->name : '-'
+            );
+        }
+        if ($originalData['is_active'] != $menu->is_active) {
+            $changes[] = sprintf(
+                'status aktif dari %s menjadi %s',
+                $originalData['is_active'] ? 'aktif' : 'nonaktif',
+                $menu->is_active ? 'aktif' : 'nonaktif'
+            );
+        }
+        if ($originalData['description'] !== $menu->description) {
+            $changes[] = 'deskripsi menu';
+        }
+
+        if (!empty($changes)) {
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'Ubah Menu',
+                'target_table' => 'menus',
+                'target_id' => $menu->id,
+                'description' => sprintf(
+                    'Mengubah menu "%s": %s.',
+                    $menu->name,
+                    implode(', ', $changes)
+                ),
+            ]);
+        }
+
         $page = $request->input('page', $request->query('page', 1));
         $redirectParams = ['page' => $page];
         if ($request->query('search')) $redirectParams['search'] = $request->query('search');
@@ -181,6 +263,15 @@ class MenuController extends Controller
      */
     public function destroy(Request $request, Menu $menu)
     {
+        $menu->load('category');
+        $menuSnapshot = [
+            'id' => $menu->id,
+            'name' => $menu->name,
+            'price' => $menu->price,
+            'stock' => $menu->stock,
+            'category_name' => $menu->category ? $menu->category->name : null,
+        ];
+
         // Hapus gambar jika ada
         $directory = public_path('images/menu');
         foreach (['jpg','jpeg','png','webp'] as $ext) {
@@ -195,6 +286,20 @@ class MenuController extends Controller
         if ($request->query('search')) $redirectParams['search'] = $request->query('search');
         if ($request->query('category')) $redirectParams['category'] = $request->query('category');
         if ($request->query('status')) $redirectParams['status'] = $request->query('status');
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Hapus Menu',
+            'target_table' => 'menus',
+            'target_id' => $menuSnapshot['id'],
+            'description' => sprintf(
+                'Menghapus menu "%s" dengan harga Rp %s dan stok %s.',
+                $menuSnapshot['name'],
+                number_format($menuSnapshot['price'], 0, ',', '.'),
+                number_format($menuSnapshot['stock'], 0, ',', '.')
+            ),
+        ]);
+
         return redirect()->route('admin.menus.index', $redirectParams)->with('success', 'Menu berhasil dihapus');
     }
 }

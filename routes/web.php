@@ -10,6 +10,10 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\Admin\MenuController as AdminMenuController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
+use App\Http\Controllers\Owner\ProfileController as OwnerProfileController;
+use App\Http\Controllers\Owner\ReportController as OwnerReportController;
+use App\Http\Controllers\Owner\ActivityLogController as OwnerActivityLogController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AdminReviewController;
@@ -21,8 +25,13 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    if (auth()->check() && auth()->user()->role && auth()->user()->role->name === 'admin') {
-        return redirect()->route('admin.dashboard');
+    if (auth()->check() && auth()->user()->role) {
+        if (auth()->user()->role->name === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        if (auth()->user()->role->name === 'owner') {
+            return redirect()->route('owner.dashboard');
+        }
     }
     return redirect('/');
 })->name('dashboard');
@@ -90,6 +99,31 @@ Route::middleware(['auth'])->group(function(){
             
             // Admin can download invoice for any order
             Route::get('/orders/{order}/invoice', [OrderController::class, 'downloadInvoice'])->name('orders.invoice');
+        });
+    });
+    
+    // Owner routes
+    Route::middleware('can:owner-only')->group(function(){
+        Route::prefix('owner')->name('owner.')->group(function(){
+            Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('dashboard');
+            
+            // Owner profile routes
+            Route::get('/profile', [OwnerProfileController::class, 'edit'])->name('profile');
+            Route::patch('/profile', [OwnerProfileController::class, 'update'])->name('profile.update');
+            
+            // Owner report routes
+            Route::prefix('reports')->name('reports.')->group(function(){
+                Route::get('/daily', [OwnerReportController::class, 'dailyReport'])->name('daily');
+                Route::get('/daily/pdf', [OwnerReportController::class, 'dailyReportPdf'])->name('daily.pdf');
+                Route::get('/monthly', [OwnerReportController::class, 'monthlyReport'])->name('monthly');
+                Route::get('/monthly/pdf', [OwnerReportController::class, 'monthlyReportPdf'])->name('monthly.pdf');
+                Route::get('/top-menus', [OwnerReportController::class, 'topMenusReport'])->name('top-menus');
+                Route::get('/top-menus/pdf', [OwnerReportController::class, 'topMenusReportPdf'])->name('top-menus.pdf');
+            });
+            
+            // Owner activity logs route
+            Route::get('/activity-logs', [OwnerActivityLogController::class, 'index'])->name('activity-logs.index');
+            Route::get('/activity-logs/pdf', [OwnerActivityLogController::class, 'downloadPdf'])->name('activity-logs.pdf');
         });
     });
     

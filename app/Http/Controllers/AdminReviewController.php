@@ -6,6 +6,8 @@ use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Cache;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Facades\Auth;
 
 class AdminReviewController extends Controller
 {
@@ -75,6 +77,12 @@ class AdminReviewController extends Controller
         Gate::authorize('moderate', Review::class);
         
         $review->update(['status' => 'approved']);
+        ActivityLogger::log(
+            'Approve Review',
+            'reviews',
+            $review->id,
+            'Menyetujui sebuah ulasan.'
+        );
         
         // Clear cache for deleted reviews
         Cache::forget("deleted_reviews_menu_{$review->menu_id}");
@@ -91,6 +99,12 @@ class AdminReviewController extends Controller
         Gate::authorize('moderate', Review::class);
         
         $review->update(['status' => 'hidden']);
+        ActivityLogger::log(
+            'Sembunyikan Review',
+            'reviews',
+            $review->id,
+            'Menyembunyikan sebuah ulasan.'
+        );
         
         // Clear cache for deleted reviews
         Cache::forget("deleted_reviews_menu_{$review->menu_id}");
@@ -107,6 +121,12 @@ class AdminReviewController extends Controller
         Gate::authorize('moderate', Review::class);
         
         $review->update(['status' => 'approved']);
+        ActivityLogger::log(
+            'Tampilkan Review',
+            'reviews',
+            $review->id,
+            'Menampilkan kembali sebuah ulasan.'
+        );
         
         // Clear cache for deleted reviews
         Cache::forget("deleted_reviews_menu_{$review->menu_id}");
@@ -125,6 +145,12 @@ class AdminReviewController extends Controller
         $menuId = $review->menu_id;
         $reviewId = $review->id;
         
+        ActivityLogger::log(
+            'Hapus Review',
+            'reviews',
+            $review->id,
+            'Menolak dan menghapus sebuah ulasan.'
+        );
         $review->delete();
         
         // Store deleted review ID in cache for real-time sync
@@ -162,6 +188,12 @@ class AdminReviewController extends Controller
                 }
                 Review::whereIn('id', $reviewIds)->update(['status' => 'approved']);
                 $message = 'Review yang dipilih berhasil disetujui.';
+                ActivityLogger::log(
+                    'Bulk Approve Review',
+                    'reviews',
+                    null,
+                    sprintf('Menyetujui %d ulasan.', count($reviewIds))
+                );
                 break;
             case 'hide':
                 $reviews = Review::whereIn('id', $reviewIds)->get();
@@ -170,6 +202,12 @@ class AdminReviewController extends Controller
                 }
                 Review::whereIn('id', $reviewIds)->update(['status' => 'hidden']);
                 $message = 'Review yang dipilih berhasil disembunyikan.';
+                ActivityLogger::log(
+                    'Bulk Hide Review',
+                    'reviews',
+                    null,
+                    sprintf('Menyembunyikan %d ulasan.', count($reviewIds))
+                );
                 break;
             case 'unhide':
                 $reviews = Review::whereIn('id', $reviewIds)->get();
@@ -178,6 +216,12 @@ class AdminReviewController extends Controller
                 }
                 Review::whereIn('id', $reviewIds)->update(['status' => 'approved']);
                 $message = 'Review yang dipilih berhasil ditampilkan kembali.';
+                ActivityLogger::log(
+                    'Bulk Unhide Review',
+                    'reviews',
+                    null,
+                    sprintf('Menampilkan kembali %d ulasan.', count($reviewIds))
+                );
                 break;
             case 'reject':
                 $reviews = Review::whereIn('id', $reviewIds)->get();
@@ -190,6 +234,12 @@ class AdminReviewController extends Controller
                 }
                 Review::whereIn('id', $reviewIds)->delete();
                 $message = 'Review yang dipilih berhasil ditolak dan dihapus.';
+                ActivityLogger::log(
+                    'Bulk Delete Review',
+                    'reviews',
+                    null,
+                    sprintf('Menolak & menghapus %d ulasan.', count($reviewIds))
+                );
                 break;
         }
         

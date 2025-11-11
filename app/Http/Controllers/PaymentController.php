@@ -142,7 +142,7 @@ class PaymentController extends Controller
                     // Payment failed - kembalikan stock menu
                     $payment->payment_status = 'gagal';
                     $payment->transaction_id = $notification['transaction_id'] ?? $payment->transaction_id;
-                    $payment->save(); // This will include the updated payment_method if it was set above
+                    $payment->save(); 
                     
                     $order->status = 'batal';
                     $order->save();

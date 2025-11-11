@@ -121,7 +121,7 @@
                         @endauth
                         
                         @auth
-                            <button type="button" onclick="openAddToCartModal({{ $menu->id }}, '{{ $menu->name }}')" class="flex-1 bg-orange-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg hover:bg-orange-700 transition text-sm md:text-base">
+                            <button type="button" onclick="openAddToCartModal({{ $menu->id }}, '{{ $menu->name }}', {{ $menu->stock }})" class="flex-1 bg-orange-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg hover:bg-orange-700 transition text-sm md:text-base {{ $menu->stock <= 0 ? 'opacity-50 cursor-not-allowed' : '' }}" {{ $menu->stock <= 0 ? 'disabled' : '' }}>
                                 <i class="fas fa-shopping-cart mr-1 md:mr-2"></i>
                                 <span class="hidden sm:inline">Add to Cart</span>
                                 <span class="sm:hidden">Cart</span>
@@ -167,11 +167,12 @@
                         <button type="button" onclick="decreaseQuantity()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors">
                             <i class="fas fa-minus"></i>
                         </button>
-                        <input type="number" name="quantity" id="modal-quantity" value="1" min="1" class="w-16 text-center border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500">
+                        <input type="number" name="quantity" id="modal-quantity" value="1" min="1" max="999" class="w-16 text-center border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500" onchange="validateQuantity()">
                         <button type="button" onclick="increaseQuantity()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
+                    <p id="stock-info" class="text-xs text-gray-500 mt-1"></p>
                 </div>
                 
                 <div class="mb-4">
@@ -195,13 +196,23 @@
 <script>
 let currentMenuId = null;
 let currentMenuName = null;
+let currentMenuStock = null;
 
-function openAddToCartModal(menuId, menuName) {
+function openAddToCartModal(menuId, menuName, menuStock) {
     currentMenuId = menuId;
     currentMenuName = menuName;
+    currentMenuStock = menuStock;
     document.getElementById('modal-menu-id').value = menuId;
     document.getElementById('modal-quantity').value = 1;
     document.getElementById('modal-notes').value = '';
+    // Set max attribute based on stock
+    const quantityInput = document.getElementById('modal-quantity');
+    quantityInput.setAttribute('max', menuStock);
+    // Show stock info
+    const stockInfo = document.getElementById('stock-info');
+    if (stockInfo) {
+        stockInfo.textContent = `Stok tersedia: ${menuStock} item`;
+    }
     document.getElementById('addToCartModal').classList.remove('hidden');
 }
 
@@ -211,13 +222,44 @@ function closeAddToCartModal() {
 
 function increaseQuantity() {
     const input = document.getElementById('modal-quantity');
-    input.value = parseInt(input.value) + 1;
+    const currentValue = parseInt(input.value);
+    const maxStock = currentMenuStock || parseInt(input.getAttribute('max')) || 999;
+    
+    if (currentValue >= maxStock) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Stok Tidak Cukup!',
+            html: `Stok <strong>${currentMenuName}</strong> hanya tersedia <strong>${maxStock}</strong> item.<br>Anda tidak dapat memesan lebih dari stok yang tersedia.`,
+            confirmButtonColor: '#f97316',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+    
+    input.value = currentValue + 1;
 }
 
 function decreaseQuantity() {
     const input = document.getElementById('modal-quantity');
     if (parseInt(input.value) > 1) {
         input.value = parseInt(input.value) - 1;
+    }
+}
+
+function validateQuantity() {
+    const input = document.getElementById('modal-quantity');
+    const quantity = parseInt(input.value);
+    const maxStock = currentMenuStock || parseInt(input.getAttribute('max')) || 999;
+    
+    if (quantity > maxStock) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Stok Tidak Cukup!',
+            html: `Stok <strong>${currentMenuName}</strong> hanya tersedia <strong>${maxStock}</strong> item.<br>Anda tidak dapat memesan lebih dari stok yang tersedia.`,
+            confirmButtonColor: '#f97316',
+            confirmButtonText: 'OK'
+        });
+        input.value = maxStock;
     }
 }
 
@@ -228,6 +270,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addToCartForm) {
         addToCartForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Validate stock before submitting
+            const quantityInput = document.getElementById('modal-quantity');
+            const quantity = parseInt(quantityInput.value);
+            const maxStock = currentMenuStock || parseInt(quantityInput.getAttribute('max')) || 999;
+            
+            if (quantity > maxStock) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Stok Tidak Cukup!',
+                    html: `Stok <strong>${currentMenuName}</strong> hanya tersedia <strong>${maxStock}</strong> item.<br>Anda tidak dapat memesan lebih dari stok yang tersedia.`,
+                    confirmButtonColor: '#f97316',
+                    confirmButtonText: 'OK'
+                });
+                quantityInput.value = maxStock;
+                return;
+            }
             
             const submitBtn = addToCartForm.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;

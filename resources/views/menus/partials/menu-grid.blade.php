@@ -120,7 +120,7 @@
                 </a>
                 
                 @auth
-                    <button type="button" onclick="openAddToCartModal({{ $menu->id }}, '{{ $menu->name }}')" 
+                    <button type="button" onclick="openAddToCartModal({{ $menu->id }}, '{{ $menu->name }}', {{ $menu->stock }})" 
                             class="px-4 py-2.5 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed {{ $menu->stock <= 0 ? 'opacity-50 cursor-not-allowed' : '' }}"
                             {{ $menu->stock <= 0 ? 'disabled' : '' }}>
                         <i class="fas fa-shopping-cart"></i>

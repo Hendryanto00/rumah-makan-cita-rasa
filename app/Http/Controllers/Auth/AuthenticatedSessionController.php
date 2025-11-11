@@ -35,9 +35,14 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('verification.notice');
         }
 
-        // Redirect admin ke dashboard admin
-        if ($user->role && $user->role->name === 'admin') {
-            return redirect()->intended(route('admin.dashboard'));
+        // Redirect berdasarkan role
+        if ($user->role) {
+            if ($user->role->name === 'admin') {
+                return redirect()->intended(route('admin.dashboard'));
+            }
+            if ($user->role->name === 'owner') {
+                return redirect()->intended(route('owner.dashboard'));
+            }
         }
 
         return redirect()->intended('/');
