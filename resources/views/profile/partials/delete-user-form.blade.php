@@ -11,11 +11,30 @@
 
     <x-danger-button
         x-data=""
-        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
+        x-on:click.prevent="
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Hapus Akun?',
+                    html: 'Setelah akun Anda dihapus, semua sumber daya dan data akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, lanjutkan',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $dispatch('open-modal', 'confirm-user-deletion');
+                    }
+                });
+            } else {
+                $dispatch('open-modal', 'confirm-user-deletion');
+            }
+        "
     >Hapus Akun</x-danger-button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
-        <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
+        <form id="deleteAccountForm" method="post" action="{{ route('profile.destroy') }}" class="p-6">
             @csrf
             @method('delete')
 
@@ -60,7 +79,7 @@
                     Batal
                 </x-secondary-button>
 
-                <x-danger-button class="ms-3">
+                <x-danger-button type="button" onclick="confirmDeleteAccount()" class="ms-3">
                     Hapus Akun
                 </x-danger-button>
             </div>
@@ -88,6 +107,43 @@
                             d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     `;
                 }
+            }
+
+            function confirmDeleteAccount() {
+                const form = document.getElementById('deleteAccountForm');
+                const passwordInput = document.getElementById('password');
+                
+                if (!passwordInput.value) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Silakan masukkan kata sandi Anda.',
+                            confirmButtonColor: '#dc2626'
+                        });
+                    }
+                    return;
+                }
+
+                if (typeof Swal === 'undefined') {
+                    form.submit();
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Konfirmasi Hapus Akun',
+                    html: 'Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan.',
+                    icon: 'error',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, hapus sekarang',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
             }
         </script>
     </x-modal>

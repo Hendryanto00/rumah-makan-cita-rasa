@@ -75,16 +75,6 @@
 
         <div class="flex items-center gap-4">
             <x-primary-button>Simpan</x-primary-button>
-
-            @if (session('status') === 'password-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >Tersimpan.</p>
-            @endif
         </div>
     </form>
 
@@ -113,3 +103,44 @@
         }
     </script>
 </section>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const passwordForm = document.querySelector('form[action="{{ route('password.update') }}"]');
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', function(e){
+            e.preventDefault();
+            if (typeof Swal === 'undefined') { passwordForm.submit(); return; }
+            Swal.fire({
+                title: 'Ubah kata sandi?',
+                text: 'Pastikan mengingat kata sandi baru Anda.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f97316',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Ya, ubah',
+                cancelButtonText: 'Batal'
+            }).then((result) => { 
+                if (result.isConfirmed) {
+                    passwordForm.submit();
+                }
+            });
+        });
+    }
+});
+
+@if(session('status') === 'password-updated')
+Swal.fire({
+    icon: 'success',
+    title: 'Berhasil',
+    text: 'Kata sandi berhasil diperbarui.',
+    timer: 2000,
+    timerProgressBar: true,
+    showConfirmButton: true,
+    confirmButtonText: 'OK',
+    confirmButtonColor: '#f97316'
+});
+@endif
+</script>
+@endpush

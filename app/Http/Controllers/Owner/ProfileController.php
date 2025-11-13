@@ -27,15 +27,19 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        try {
+            $request->user()->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+            if ($request->user()->isDirty('email')) {
+                $request->user()->email_verified_at = null;
+            }
+
+            $request->user()->save();
+
+            return Redirect::route('owner.profile')->with('success', 'Profil berhasil diperbarui!');
+        } catch (\Exception $e) {
+            return Redirect::route('owner.profile')->with('error', 'Gagal memperbarui profil. Silakan coba lagi.');
         }
-
-        $request->user()->save();
-
-        return Redirect::route('owner.profile')->with('success', 'Profil berhasil diperbarui!');
     }
 }
 

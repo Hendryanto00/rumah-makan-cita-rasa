@@ -63,16 +63,59 @@
 
         <div class="flex items-center gap-4">
             <x-primary-button>Simpan</x-primary-button>
-
-            @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >Tersimpan.</p>
-            @endif
         </div>
     </form>
 </section>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const profileForm = document.querySelector('form[action="{{ route('profile.update') }}"]');
+    if (profileForm) {
+        profileForm.addEventListener('submit', function(e){
+            e.preventDefault();
+            if (typeof Swal === 'undefined') { profileForm.submit(); return; }
+            Swal.fire({
+                title: 'Simpan perubahan profil?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#f97316',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Ya, simpan',
+                cancelButtonText: 'Batal'
+            }).then((result) => { 
+                if (result.isConfirmed) {
+                    profileForm.submit();
+                }
+            });
+        });
+    }
+});
+
+@if(session('success'))
+Swal.fire({
+    icon: 'success',
+    title: 'Berhasil',
+    text: '{{ session('success') }}',
+    timer: 2000,
+    timerProgressBar: true,
+    showConfirmButton: true,
+    confirmButtonText: 'OK',
+    confirmButtonColor: '#f97316'
+});
+@endif
+
+@if(session('error'))
+Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: '{{ session('error') }}',
+    timer: 3000,
+    timerProgressBar: true,
+    showConfirmButton: true,
+    confirmButtonText: 'OK',
+    confirmButtonColor: '#dc2626'
+});
+@endif
+</script>
+@endpush

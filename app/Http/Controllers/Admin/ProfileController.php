@@ -28,38 +28,42 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $original = [
-            'name' => $request->user()->name,
-            'email' => $request->user()->email,
-            'phone' => $request->user()->phone ?? null,
-            'address' => $request->user()->address ?? null,
-        ];
+        try {
+            $original = [
+                'name' => $request->user()->name,
+                'email' => $request->user()->email,
+                'phone' => $request->user()->phone ?? null,
+                'address' => $request->user()->address ?? null,
+            ];
 
-        $request->user()->fill($request->validated());
+            $request->user()->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
-
-        // Log activity
-        $changes = [];
-        foreach (['name','email','phone','address'] as $field) {
-            if ($request->user()->wasChanged($field)) {
-                $changes[] = $field;
+            if ($request->user()->isDirty('email')) {
+                $request->user()->email_verified_at = null;
             }
-        }
-        if (!empty($changes)) {
-            ActivityLogger::log(
-                'Ubah Profil Admin',
-                'users',
-                $request->user()->id,
-                sprintf('Mengubah profil admin: %s.', implode(', ', $changes))
-            );
-        }
 
-        return Redirect::route('admin.profile')->with('success', 'Profil berhasil diperbarui!');
+            $request->user()->save();
+
+            // Log activity
+            $changes = [];
+            foreach (['name','email','phone','address'] as $field) {
+                if ($request->user()->wasChanged($field)) {
+                    $changes[] = $field;
+                }
+            }
+            if (!empty($changes)) {
+                ActivityLogger::log(
+                    'Ubah Profil Admin',
+                    'users',
+                    $request->user()->id,
+                    sprintf('Mengubah profil admin: %s.', implode(', ', $changes))
+                );
+            }
+
+            return Redirect::route('admin.profile')->with('success', 'Profil berhasil diperbarui!');
+        } catch (\Exception $e) {
+            return Redirect::route('admin.profile')->with('error', 'Gagal memperbarui profil. Silakan coba lagi.');
+        }
     }
 }
 
