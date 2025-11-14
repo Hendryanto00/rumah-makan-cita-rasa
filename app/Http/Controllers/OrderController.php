@@ -234,6 +234,52 @@ class OrderController extends Controller
         
         return view('payment.snap', compact('snapToken', 'order'));
     }
+
+    public function refreshSnapToken(Request $request, Order $order)
+    {
+        $user = auth()->user();
+
+        if (!$user || $order->user_id !== $user->id) {
+            return response()->json(['message' => 'Tidak diizinkan'], 403);
+        }
+
+        if ($order->payment->payment_status !== 'pending') {
+            return response()->json(['message' => 'Pembayaran sudah diproses'], 422);
+        }
+
+        $order->loadMissing('details.menu', 'payment');
+
+        Config::$serverKey = config('services.midtrans.server_key');
+        Config::$isProduction = config('services.midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+
+        $transaction = [
+            'transaction_details' => [
+                'order_id' => 'ORDER-' . $order->id . '-' . time(),
+                'gross_amount' => (int) $order->total_amount,
+            ],
+            'customer_details' => [
+                'first_name' => $user->name,
+                'email' => $user->email,
+            ],
+            'item_details' => $order->details->map(function ($detail) {
+                return [
+                    'id' => $detail->menu_id,
+                    'price' => (int) $detail->price,
+                    'quantity' => (int) $detail->quantity,
+                    'name' => $detail->menu->name,
+                ];
+            })->toArray(),
+        ];
+
+        $snapToken = Snap::getSnapToken($transaction);
+
+        $order->payment->snap_token = $snapToken;
+        $order->payment->save();
+
+        return response()->json(['snap_token' => $snapToken]);
+    }
     
     public function downloadInvoice(Request $request, $order)
     {

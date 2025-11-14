@@ -79,14 +79,16 @@
                 </div>
             </div>
 
-            <!-- Info Box - Moved to top so it's always visible -->
-            <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-4 shadow-md testing-instructions">
+            <!-- Info Box - includes testing info and user guidance -->
+            <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-4 shadow-md testing-instructions space-y-4">
                 <div class="flex items-start">
                     <i class="fas fa-info-circle text-blue-600 mr-3 mt-1 text-xl"></i>
                     <div class="flex-1">
-                        <p class="text-base text-blue-900 font-bold mb-2">Mode Testing (Sandbox)</p>
+                        <p class="text-base text-blue-900 font-bold mb-2">
+                            Mode Testing (Sandbox) <span class="inline-block bg-amber-200 text-amber-900 text-xs font-semibold px-2 py-0.5 rounded ml-2 uppercase tracking-wide">Mohon dibaca</span>
+                        </p>
                         <p class="text-sm text-blue-800 mb-3">
-                            Sistem menggunakan Midtrans sandbox untuk testing. Untuk pembayaran uji coba, gunakan kartu kredit testing berikut:
+                            Sistem menggunakan Midtrans sandbox untuk testing. <strong>Mode ini hanya mendukung pembayaran kartu kredit testing.</strong> Mohon <strong>jangan memilih metode lain</strong> karena tidak akan berfungsi.
                         </p>
                         <div class="bg-white rounded-lg p-3 border border-blue-200">
                             <ul class="text-sm text-blue-900 space-y-2">
@@ -100,10 +102,21 @@
                                 </li>
                                 <li class="flex items-start">
                                     <i class="fas fa-calendar text-blue-600 mr-2 mt-0.5"></i>
-                                    <span><strong class="text-blue-800">Expiry:</strong> Setiap tanggal masa depan</span>
+                                    <span><strong class="text-blue-800">Expiry:</strong> Tanggal masa depan, contoh 01/28 atau 10/28</span>
                                 </li>
                             </ul>
                         </div>
+                    </div>
+                </div>
+
+                <div class="flex items-start border-t border-blue-200 pt-4 mt-4">
+                    <i class="fas fa-credit-card text-blue-600 mr-3 mt-1 text-xl"></i>
+                    <div class="flex-1 text-sm text-blue-900 space-y-2">
+                        <p class="text-base font-semibold text-blue-800">Panduan Kartu Kredit (Testing)</p>
+                        <p>1. Klik <strong>Bayar Sekarang</strong>, masuk ke jendela Snap, lalu pilih metode <strong>Kartu Kredit</strong>. Jangan pilih metode lain karena mode testing sandbox tidak mendukungnya.</p>
+                        <p>2. Masukkan data uji di atas (nomor kartu, CVV, dan tanggal kadaluarsa masa depan), kemudian ikuti instruksi OTP simulasi hingga pembayaran selesai.</p>
+                        <p>3. Jika ingin mengganti metode lain, klik ikon <strong>panah melingkar</strong> di pojok kanan atas jendela Snap atau tutup jendela (ikon ❌) dan tekan kembali <strong>Bayar Sekarang</strong>.</p>
+                        <p class="text-xs text-blue-700">Catatan: Jendela pembayaran memiliki batas waktu. Bila tertutup otomatis, ulangi langkah di atas.</p>
                     </div>
                 </div>
             </div>
@@ -159,9 +172,60 @@
     <script type="text/javascript">
         let snapToken = '{{ $snapToken }}';
         let paymentProcessed = false;
+        const payButton = document.getElementById('pay-button');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const refreshTokenUrl = '{{ route('order.refresh-snap-token', $order) }}';
+
+        async function refreshSnapTokenWithFeedback() {
+            paymentProcessed = false;
+            payButton.disabled = true;
+            payButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyiapkan ulang...';
+
+            try {
+                const response = await fetch(refreshTokenUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({})
+                });
+
+                if (!response.ok) {
+                    throw new Error('Gagal memperbarui token');
+                }
+
+                const data = await response.json();
+                snapToken = data.snap_token;
+
+                setTimeout(() => {
+                    Swal.fire({
+                        title: 'Pembayaran Dibatalkan',
+                        text: 'Anda menutup jendela pembayaran. Klik Bayar Sekarang untuk memilih metode lain.',
+                        icon: 'info',
+                        confirmButtonColor: '#f97316',
+                        confirmButtonText: 'OK'
+                    });
+                }, 400);
+            } catch (error) {
+                console.error('Refresh Snap token error:', error);
+                Swal.fire({
+                    title: 'Gagal Menyiapkan Ulang',
+                    text: 'Silakan muat ulang halaman atau coba lagi.',
+                    icon: 'error',
+                    confirmButtonColor: '#f97316',
+                    confirmButtonText: 'OK'
+                });
+            } finally {
+                payButton.disabled = false;
+                payButton.innerHTML = '<i class="fas fa-credit-card mr-2"></i>Bayar Sekarang';
+            }
+        }
         
         // Handle pay button click
-        document.getElementById('pay-button').addEventListener('click', function() {
+        payButton.addEventListener('click', function() {
             if (paymentProcessed) return;
             
             // Disable button to prevent multiple clicks
@@ -214,9 +278,8 @@
                 onError: function(result) {
                     paymentProcessed = false;
                     // Re-enable button on error
-                    const btn = document.getElementById('pay-button');
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-credit-card mr-2"></i>Bayar Sekarang';
+                    payButton.disabled = false;
+                    payButton.innerHTML = '<i class="fas fa-credit-card mr-2"></i>Bayar Sekarang';
                     
                     // Handle error
                     Swal.fire({
@@ -228,20 +291,7 @@
                     });
                 },
                 onClose: function() {
-                    paymentProcessed = false;
-                    // Re-enable button when closed
-                    const btn = document.getElementById('pay-button');
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-credit-card mr-2"></i>Bayar Sekarang';
-                    
-                    // Handle close
-                    Swal.fire({
-                        title: 'Pembayaran Dibatalkan',
-                        text: 'Anda membatalkan pembayaran',
-                        icon: 'warning',
-                        confirmButtonColor: '#f97316',
-                        confirmButtonText: 'OK'
-                    });
+                    refreshSnapTokenWithFeedback();
                 }
             });
         });

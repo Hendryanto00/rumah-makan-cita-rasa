@@ -138,6 +138,7 @@ Route::middleware(['auth'])->group(function(){
         Route::get('/orders/{order}', [OrderController::class,'show'])->name('orders.show');
         Route::post('/order', [OrderController::class,'store'])->name('order.store');
         Route::get('/order/{order}/continue-payment', [OrderController::class,'continuePayment'])->name('order.continue-payment');
+        Route::post('/order/{order}/refresh-snap-token', [OrderController::class,'refreshSnapToken'])->name('order.refresh-snap-token');
         Route::get('/order/{order}/invoice', [OrderController::class,'downloadInvoice'])->name('order.invoice');
         Route::get('/payment/snap', function(Request $request) {
             $order = \App\Models\Order::with(['details.menu'])->findOrFail($request->order);
