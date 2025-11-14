@@ -62,7 +62,11 @@
                                             $possible = ['jpg','jpeg','png','webp'];
                                             $found = null;
                                             foreach ($possible as $ext) {
-                                                if (file_exists(public_path("images/menu/{$slug}.{$ext}"))) { $found = $ext; break; }
+                                                $filePath = public_path("images/menu/{$slug}.{$ext}");
+                                                if (file_exists($filePath) && is_file($filePath)) { 
+                                                    $found = $ext; 
+                                                    break; 
+                                                }
                                             }
                                             $imageUrl = $found ? asset("images/menu/{$slug}.{$found}") : asset('images/rumah-makan.jpg');
                                         @endphp

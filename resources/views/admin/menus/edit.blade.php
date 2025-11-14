@@ -61,7 +61,11 @@
                         $slug = \Illuminate\Support\Str::slug($menu->name);
                         $ext = null;
                         foreach (['jpg','jpeg','png','webp'] as $e) {
-                            if (file_exists(public_path("images/menu/{$slug}.{$e}"))) { $ext = $e; break; }
+                            $filePath = public_path("images/menu/{$slug}.{$e}");
+                            if (file_exists($filePath) && is_file($filePath)) { 
+                                $ext = $e; 
+                                break; 
+                            }
                         }
                         $currentImage = $ext ? asset("images/menu/{$slug}.{$ext}") : asset('images/rumah-makan.jpg');
                     @endphp

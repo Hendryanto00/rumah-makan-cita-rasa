@@ -74,7 +74,11 @@
                         $possible = ['jpg','jpeg','png','webp'];
                         $found = null;
                         foreach ($possible as $ext) {
-                            if (file_exists(public_path("images/menu/{$slug}.{$ext}"))) { $found = $ext; break; }
+                            $filePath = public_path("images/menu/{$slug}.{$ext}");
+                            if (file_exists($filePath) && is_file($filePath)) { 
+                                $found = $ext; 
+                                break; 
+                            }
                         }
                         $imageUrl = $found ? asset("images/menu/{$slug}.{$found}") : asset('images/rumah-makan.jpg');
                     @endphp
@@ -420,12 +424,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentUserId = {{ auth()->check() ? auth()->id() : 'null' }};
     
     function checkReviewUpdates() {
-        fetch(`{{ route('api.review-updates') }}?menu_id=${menuId}&last_check=${encodeURIComponent(lastReviewCheck)}`, {
+        const apiUrl = @json(route('api.review-updates')) + `?menu_id=${menuId}&last_check=${encodeURIComponent(lastReviewCheck)}`;
+        
+        fetch(apiUrl, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json',
-            }
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            credentials: 'same-origin'
         })
         .then(response => response.json())
         .then(data => {
@@ -478,23 +486,26 @@ document.addEventListener('DOMContentLoaded', function() {
         if (reviewElement) {
             // Update existing review
             // Update status badge if it's user's own review
+            // Badge sudah ada di template, jadi kita hanya perlu update visibility
             if (review.is_own_review && review.status === 'pending') {
-                let statusBadge = reviewElement.querySelector('.review-status-badge');
-                if (!statusBadge) {
-                    const nameElement = reviewElement.querySelector('h4');
-                    if (nameElement) {
-                        const badge = document.createElement('span');
-                        badge.className = 'review-status-badge px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 flex items-center gap-1 ml-3';
-                        badge.innerHTML = '<i class="fas fa-clock text-xs"></i>Menunggu Persetujuan';
-                        nameElement.parentElement.appendChild(badge);
+                // Badge sudah ada di template, tidak perlu menambahkan lagi
+                // Cari badge yang berisi icon clock
+                const allSpans = reviewElement.querySelectorAll('span');
+                allSpans.forEach(span => {
+                    const clockIcon = span.querySelector('.fa-clock');
+                    if (clockIcon && span.textContent.includes('Menunggu Persetujuan')) {
+                        span.style.display = 'flex';
                     }
-                }
+                });
             } else if (review.status === 'approved') {
-                // Remove pending badge if approved
-                const statusBadge = reviewElement.querySelector('.review-status-badge');
-                if (statusBadge) {
-                    statusBadge.remove();
-                }
+                // Hide pending badge if approved
+                const allSpans = reviewElement.querySelectorAll('span');
+                allSpans.forEach(span => {
+                    const clockIcon = span.querySelector('.fa-clock');
+                    if (clockIcon && span.textContent.includes('Menunggu Persetujuan')) {
+                        span.style.display = 'none';
+                    }
+                });
             }
             
             // Update status message

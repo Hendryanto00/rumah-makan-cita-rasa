@@ -11,7 +11,22 @@ class UpdateReviewRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && $this->route('review')->canBeEditedBy(auth()->user());
+        if (!auth()->check()) {
+            return false;
+        }
+        
+        $review = $this->route('review');
+        
+        // Handle both object and ID from route
+        if (is_numeric($review)) {
+            $review = \App\Models\Review::find($review);
+        }
+        
+        if (!$review) {
+            return false;
+        }
+        
+        return $review->canBeEditedBy(auth()->user());
     }
 
     /**

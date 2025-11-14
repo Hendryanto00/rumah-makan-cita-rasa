@@ -1,5 +1,10 @@
 @props(['menu'])
 
+@php
+    // Get base URL for review routes
+    $reviewsBaseUrl = url('/reviews');
+@endphp
+
 <div class="mt-8 bg-white rounded-lg shadow-sm border">
     <div class="p-6">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Customer Reviews</h3>
@@ -46,7 +51,6 @@
                                 @endfor
                             </div>
                             <span class="ml-2 text-2xl font-bold text-gray-900">{{ number_format($averageRating, 1) }}</span>
-                            <span class="ml-1 text-gray-600">out of 5</span>
                         </div>
                         <div class="text-right">
                             <p class="text-sm text-gray-600">{{ $totalReviews }} {{ $totalReviews === 1 ? 'review' : 'reviews' }}</p>
@@ -210,7 +214,7 @@
             </div>
 
             <!-- Modal Form -->
-            <form id="editForm" method="POST">
+            <form id="editForm" method="POST" action="">
                 @csrf
                 @method('PUT')
                 
@@ -257,6 +261,9 @@
 </div>
 
 <script>
+// Base URL for reviews
+const reviewsBaseUrl = @json($reviewsBaseUrl);
+
 function toggleDropdown(button) {
     const dropdown = button.nextElementSibling;
     const isHidden = dropdown.classList.contains('hidden');
@@ -308,8 +315,8 @@ function openEditModal(reviewId, rating, comment) {
     const form = document.getElementById('editForm');
     const commentField = document.getElementById('comment');
     
-    // Set form action
-    form.action = `/reviews/${reviewId}`;
+    // Set form action using base URL from Laravel
+    form.action = `${reviewsBaseUrl}/${reviewId}`;
     
     // Set current values
     commentField.value = comment;
