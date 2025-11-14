@@ -15,7 +15,31 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @php
+            $manifestPath = public_path('build/manifest.json');
+            $manifestExists = file_exists($manifestPath);
+            $cssFile = null;
+            $jsFile = null;
+            
+            if ($manifestExists) {
+                try {
+                    $manifest = json_decode(file_get_contents($manifestPath), true);
+                    $cssFile = $manifest['resources/css/app.css']['file'] ?? null;
+                    $jsFile = $manifest['resources/js/app.js']['file'] ?? null;
+                } catch (\Exception $e) {
+                    // Manifest exists but can't be read
+                }
+            }
+        @endphp
+        
+        @if($manifestExists && $cssFile && $jsFile)
+            <!-- Production: Load from manifest -->
+            <link rel="stylesheet" href="{{ url('build/' . $cssFile) }}">
+            <script src="{{ url('build/' . $jsFile) }}" defer></script>
+        @else
+            <!-- Development: Use Vite -->
+            @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @endif
         
         <script>
             // Ensure CSRF token is refreshed on page load

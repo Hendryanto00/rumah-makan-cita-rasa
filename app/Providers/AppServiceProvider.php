@@ -40,5 +40,10 @@ class AppServiceProvider extends ServiceProvider
         
         // Set pagination to Indonesian
         \Illuminate\Pagination\Paginator::useBootstrap();
+        
+        // Ensure asset URLs are absolute in production
+        if (app()->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }
