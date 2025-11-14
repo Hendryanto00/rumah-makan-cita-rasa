@@ -18,5 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Handle signed URL validation errors for email verification
+        $exceptions->render(function (\Illuminate\Routing\Exceptions\InvalidSignatureException $e, $request) {
+            if ($request->is('verify-email/*')) {
+                return redirect('/')->with('error', 'Link verifikasi tidak valid atau sudah kedaluwarsa. Silakan minta link verifikasi baru.');
+            }
+        });
     })->create();

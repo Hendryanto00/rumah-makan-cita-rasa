@@ -44,6 +44,10 @@ class AppServiceProvider extends ServiceProvider
         // Ensure asset URLs are absolute in production
         if (app()->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
+            // Ensure APP_URL is set correctly for absolute URLs
+            if (config('app.url')) {
+                \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
+            }
         }
     }
 }

@@ -268,4 +268,19 @@
 </script>
 @endif
 
+@if(session('error'))
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '{{ session('error') }}',
+        timer: 5000,
+        timerProgressBar: true,
+        showConfirmButton: true,
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#f97316'
+    });
+</script>
+@endif
+
 @endsection

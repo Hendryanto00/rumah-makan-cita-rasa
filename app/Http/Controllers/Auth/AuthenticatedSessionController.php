@@ -30,8 +30,17 @@ class AuthenticatedSessionController extends Controller
         
         $user = $request->user();
         
-        // Jika belum verifikasi, arahkan ke halaman verifikasi (kecuali sudah di halaman verifikasi)
+        // Jika belum verifikasi, cek apakah user datang dari verification link
+        // Jika ada intended URL (misalnya dari verification link), gunakan itu
+        // Jika tidak, arahkan ke halaman verifikasi
         if (! $user->hasVerifiedEmail() && ! $request->expectsJson()) {
+            $intended = $request->session()->get('url.intended');
+            // Jika intended URL adalah verification link, biarkan user verifikasi dulu
+            if ($intended && strpos($intended, 'verify-email') !== false) {
+                // Jangan pull, biarkan intended URL tetap ada untuk redirect setelah verifikasi
+                return redirect($intended);
+            }
+            // Jika tidak, arahkan ke halaman verifikasi
             return redirect()->route('verification.notice');
         }
 

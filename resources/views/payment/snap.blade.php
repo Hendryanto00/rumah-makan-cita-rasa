@@ -19,7 +19,31 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @php
+        $manifestPath = public_path('build/manifest.json');
+        $manifestExists = file_exists($manifestPath);
+        $cssFile = null;
+        $jsFile = null;
+        
+        if ($manifestExists) {
+            try {
+                $manifest = json_decode(file_get_contents($manifestPath), true);
+                $cssFile = $manifest['resources/css/app.css']['file'] ?? null;
+                $jsFile = $manifest['resources/js/app.js']['file'] ?? null;
+            } catch (\Exception $e) {
+                // Manifest exists but can't be read
+            }
+        }
+    @endphp
+    
+    @if($manifestExists && $cssFile && $jsFile)
+        <!-- Production: Load from manifest -->
+        <link rel="stylesheet" href="{{ url('build/' . $cssFile) }}">
+        <script src="{{ url('build/' . $jsFile) }}" defer></script>
+    @else
+        <!-- Development: Use Vite -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
     
     <!-- Midtrans Snap Script -->
     <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
