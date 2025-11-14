@@ -45,8 +45,15 @@ class OrderController extends Controller
      * Display the specified order.
      * Admin dapat membaca detail lengkap pesanan (user, item, harga, status, dsb).
      */
-    public function show(Order $order)
+    public function show(Request $request, $order)
     {
+        // Get order by ID (handle both object and ID from route model binding)
+        if (is_object($order) && $order instanceof Order) {
+            $order = $order;
+        } else {
+            $order = Order::findOrFail($order);
+        }
+        
         $order->load(['user', 'details.menu', 'payment']);
         
         return view('admin.orders.show', compact('order'));
@@ -55,8 +62,15 @@ class OrderController extends Controller
     /**
      * Update the status of the order.
      */
-    public function updateStatus(Request $request, Order $order)
+    public function updateStatus(Request $request, $order)
     {
+        // Get order by ID (handle both object and ID from route model binding)
+        if (is_object($order) && $order instanceof Order) {
+            $order = $order;
+        } else {
+            $order = Order::findOrFail($order);
+        }
+        
         $request->validate([
             'status' => 'required|in:pending,paid,diproses,selesai,batal'
         ]);

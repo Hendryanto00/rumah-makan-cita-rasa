@@ -17,7 +17,7 @@
     
     <!-- Search and Filter -->
     <div class="px-4 md:px-6 py-4 border-b border-gray-200 bg-gray-50">
-        <form method="GET" action="{{ route('admin.categories.index') }}" class="flex flex-col gap-3">
+        <form method="GET" action="{{ route('admin.categories.index') }}" id="category-search-form" class="flex flex-col sm:flex-row gap-3">
             <div class="flex-1 relative">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i class="fas fa-search text-gray-400"></i>
@@ -29,15 +29,18 @@
                        class="w-full pl-12 pr-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-sm md:text-base bg-white"
                        value="{{ request('search') }}">
             </div>
-            <div class="flex gap-3">
-                <button type="submit" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2.5 rounded-lg transition-colors text-sm md:text-base font-medium">
-                    <i class="fas fa-search mr-2"></i>Cari
-                </button>
-                @if(request('search'))
-                <a href="{{ route('admin.categories.index') }}" class="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors text-sm md:text-base font-medium">
-                    <i class="fas fa-times mr-2"></i>Reset
-                </a>
-                @endif
+            <button type="submit" class="sm:w-auto px-6 bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg transition-colors text-sm md:text-base font-medium whitespace-nowrap">
+                <i class="fas fa-search mr-2"></i>Cari
+            </button>
+            <div class="sm:w-56 relative">
+                <select name="menu_filter" id="menu-filter" class="w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-sm md:text-base bg-white appearance-none cursor-pointer">
+                    <option value="">Semua Kategori</option>
+                    <option value="with_menus" {{ request('menu_filter') == 'with_menus' ? 'selected' : '' }}>Dengan Menu</option>
+                    <option value="without_menus" {{ request('menu_filter') == 'without_menus' ? 'selected' : '' }}>Tanpa Menu</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                    <i class="fas fa-chevron-down text-gray-400"></i>
+                </div>
             </div>
         </form>
     </div>
@@ -208,8 +211,80 @@
 </script>
 @endif
 
+@push('styles')
+<style>
+    /* Remove default browser dropdown arrow */
+    #menu-filter {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: none !important;
+    }
+    
+    #menu-filter::-moz-focus-inner {
+        border: 0;
+    }
+    
+    #menu-filter::-ms-expand {
+        display: none;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function(){
+    // Auto-submit filter on change
+    const menuFilter = document.getElementById('menu-filter');
+    const searchForm = document.getElementById('category-search-form');
+    
+    if (menuFilter && searchForm) {
+        menuFilter.addEventListener('change', function() {
+            searchForm.submit();
+        });
+    }
+    
+    // Search with debounce (auto-submit after user stops typing)
+    // Only submit if user actually typed something (not programmatic changes)
+    const searchInput = document.getElementById('search-input');
+    let searchTimeout;
+    let isUserTyping = false;
+    
+    if (searchInput && searchForm) {
+        // Track when user is actually typing
+        searchInput.addEventListener('focus', function() {
+            isUserTyping = true;
+        });
+        
+        searchInput.addEventListener('blur', function() {
+            isUserTyping = false;
+        });
+        
+        searchInput.addEventListener('input', function(e) {
+            // Only auto-submit if user is actually typing (not programmatic)
+            if (isUserTyping && e.isTrusted) {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    if (document.activeElement === searchInput && searchForm) {
+                        searchForm.submit();
+                    }
+                }, 800);
+            }
+        });
+        
+        // Also submit on Enter key
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                clearTimeout(searchTimeout);
+                if (searchForm) {
+                    searchForm.submit();
+                }
+            }
+        });
+    }
+});
+
 function confirmDelete(categoryId, categoryName, menusCount) {
     if (menusCount > 0) {
         Swal.fire({

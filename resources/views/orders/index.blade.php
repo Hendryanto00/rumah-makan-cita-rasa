@@ -147,7 +147,7 @@
                                             <div class="flex items-center justify-center h-8 w-8 rounded-full text-xs font-bold {{ $active ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md' : 'bg-gray-200 text-gray-500' }}">
                                                 {{ $i+1 }}
                                             </div>
-                                            <div class="mx-2 text-xs font-medium {{ $active ? 'text-gray-900' : 'text-gray-400' }}">{{ $title }}</div>
+                                            <div class="mx-2 text-xs font-medium {{ $active ? 'text-gray-900' : 'text-gray-400' }} whitespace-nowrap">{{ $title }}</div>
                                             @if(!$loop->last)
                                                 <div class="flex-1 h-1 {{ $active ? 'bg-orange-300' : 'bg-gray-200' }} rounded-full"></div>
                                             @endif

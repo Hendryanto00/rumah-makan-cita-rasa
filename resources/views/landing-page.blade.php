@@ -182,12 +182,6 @@
                     Nikmati aneka menu lezat dengan kualitas terbaik.  
                     Pesan online sekarang, ambil langsung di tempat tanpa perlu antre lama.
                 </p>
-                <div class="flex gap-3">
-                    <a href="https://wa.me/6281352270928" target="_blank" 
-                       class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110 shadow-lg">
-                        <i class="fab fa-whatsapp text-xl"></i>
-                    </a>
-                </div>
             </div>
 
             {{-- Navigation --}}
@@ -259,5 +253,19 @@
         </div>
     </footer>
 
+@if(session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: true,
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#f97316'
+    });
+</script>
+@endif
 
 @endsection

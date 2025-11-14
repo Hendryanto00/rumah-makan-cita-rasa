@@ -27,6 +27,15 @@ class CategoryController extends Controller
             });
         }
         
+        // Filter by menu count
+        if ($request->has('menu_filter') && $request->menu_filter !== '') {
+            if ($request->menu_filter === 'with_menus') {
+                $query->has('menus');
+            } elseif ($request->menu_filter === 'without_menus') {
+                $query->doesntHave('menus');
+            }
+        }
+        
         $categories = $query->orderBy('name')->paginate(15)->withQueryString();
         
         return view('admin.categories.index', compact('categories'));

@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Review Management')
-@section('page-title', 'Review Management')
+@section('title', 'Kelola Review')
+@section('page-title', 'Kelola Review')
 
 @section('content')
 <div class="bg-white rounded-lg shadow">
@@ -13,59 +13,59 @@
     <div class="p-4 md:p-6">
 
                     <!-- Statistics Cards -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
-                        <div class="bg-blue-50 p-4 rounded-lg">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 sm:mb-6">
+                        <div class="bg-blue-50 p-3 sm:p-4 rounded-lg">
                             <div class="flex items-center">
-                                <div class="p-2 bg-blue-100 rounded-lg">
-                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="p-1.5 sm:p-2 bg-blue-100 rounded-lg flex-shrink-0">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                     </svg>
                                 </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-blue-600">Total Review</p>
-                                    <p class="text-2xl font-bold text-blue-900">{{ $reviews->total() }}</p>
+                                <div class="ml-2 sm:ml-3">
+                                    <p class="text-xs sm:text-sm font-medium text-blue-600">Total Review</p>
+                                    <p class="text-xl sm:text-2xl font-bold text-blue-900">{{ $reviews->total() }}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-yellow-50 p-4 rounded-lg">
+                        <div class="bg-yellow-50 p-3 sm:p-4 rounded-lg">
                             <div class="flex items-center">
-                                <div class="p-2 bg-yellow-100 rounded-lg">
-                                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="p-1.5 sm:p-2 bg-yellow-100 rounded-lg flex-shrink-0">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-yellow-600">Menunggu</p>
-                                    <p class="text-2xl font-bold text-yellow-900">{{ $stats['pending'] ?? 0 }}</p>
+                                <div class="ml-2 sm:ml-3">
+                                    <p class="text-xs sm:text-sm font-medium text-yellow-600">Menunggu</p>
+                                    <p class="text-xl sm:text-2xl font-bold text-yellow-900">{{ $stats['pending'] ?? 0 }}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-green-50 p-4 rounded-lg">
+                        <div class="bg-green-50 p-3 sm:p-4 rounded-lg">
                             <div class="flex items-center">
-                                <div class="p-2 bg-green-100 rounded-lg">
-                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="p-1.5 sm:p-2 bg-green-100 rounded-lg flex-shrink-0">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                     </svg>
                                 </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-green-600">Disetujui</p>
-                                    <p class="text-2xl font-bold text-green-900">{{ $stats['approved'] ?? 0 }}</p>
+                                <div class="ml-2 sm:ml-3">
+                                    <p class="text-xs sm:text-sm font-medium text-green-600">Disetujui</p>
+                                    <p class="text-xl sm:text-2xl font-bold text-green-900">{{ $stats['approved'] ?? 0 }}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-red-100 p-4 rounded-lg">
+                        <div class="bg-red-100 p-3 sm:p-4 rounded-lg">
                             <div class="flex items-center">
-                                <div class="p-2 bg-red-200 rounded-lg">
-                                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="p-1.5 sm:p-2 bg-red-200 rounded-lg flex-shrink-0">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>
                                     </svg>
                                 </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-red-600">Disembunyikan</p>
-                                    <p class="text-2xl font-bold text-red-900">{{ $stats['hidden'] ?? 0 }}</p>
+                                <div class="ml-2 sm:ml-3">
+                                    <p class="text-xs sm:text-sm font-medium text-red-600">Disembunyikan</p>
+                                    <p class="text-xl sm:text-2xl font-bold text-red-900">{{ $stats['hidden'] ?? 0 }}</p>
                                 </div>
                             </div>
                         </div>
@@ -169,7 +169,7 @@
                                         </td>
                                         <td class="px-4 md:px-6 py-4 hidden lg:table-cell">
                                             <div class="text-sm text-gray-900 max-w-xs truncate">
-                                                {{ $review->comment ?: 'No comment' }}
+                                                {{ $review->comment ?: 'Tidak ada komentar' }}
                                             </div>
                                         </td>
                                         <td class="px-4 md:px-6 py-4 whitespace-nowrap">

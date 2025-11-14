@@ -151,12 +151,40 @@ class OrderController extends Controller
         }
     }
 
-    public function continuePayment(Order $order)
+    public function continuePayment(Request $request, $order)
     {
         $user = auth()->user();
         
+        if (!$user) {
+            Log::error('User not authenticated for continuePayment');
+            abort(403, 'User not authenticated');
+        }
+        
+        // Get order by ID (handle both object and ID from route model binding)
+        if (is_object($order) && $order instanceof Order) {
+            // Route model binding worked, use the order directly
+            $order = $order;
+        } else {
+            // Route model binding didn't work, get order by ID
+            $order = Order::findOrFail($order);
+        }
+        
+        Log::info('continuePayment check', [
+            'order_id' => $order->id,
+            'order_user_id' => $order->user_id,
+            'current_user_id' => $user->id,
+            'match' => $order->user_id == $user->id,
+            'request_route' => $request->route()->getName(),
+            'request_url' => $request->fullUrl()
+        ]);
+        
         // Verify this order belongs to the current user
-        if ($order->user_id !== $user->id) {
+        if ($order->user_id != $user->id) {
+            Log::warning('Unauthorized access attempt', [
+                'order_id' => $order->id,
+                'order_user_id' => $order->user_id,
+                'current_user_id' => $user->id
+            ]);
             abort(403, 'Unauthorized access to this order');
         }
         
@@ -207,13 +235,42 @@ class OrderController extends Controller
         return view('payment.snap', compact('snapToken', 'order'));
     }
     
-    public function downloadInvoice(Order $order)
+    public function downloadInvoice(Request $request, $order)
     {
         $user = auth()->user();
         
+        if (!$user) {
+            Log::error('User not authenticated for downloadInvoice');
+            abort(403, 'User not authenticated');
+        }
+        
+        // Get order by ID (handle both object and ID from route model binding)
+        if (is_object($order) && $order instanceof Order) {
+            // Route model binding worked, use the order directly
+            $order = $order;
+        } else {
+            // Route model binding didn't work, get order by ID
+            $order = Order::findOrFail($order);
+        }
+        
+        Log::info('downloadInvoice check', [
+            'order_id' => $order->id,
+            'order_user_id' => $order->user_id,
+            'current_user_id' => $user->id,
+            'user_role' => $user->role->name ?? 'no role',
+            'request_route' => $request->route()->getName(),
+            'request_url' => $request->fullUrl()
+        ]);
+        
         // Allow admin to access any order invoice, or verify this order belongs to the current user
         $isAdmin = $user->role && $user->role->name === 'admin';
-        if (!$isAdmin && $order->user_id !== $user->id) {
+        if (!$isAdmin && $order->user_id != $user->id) {
+            Log::warning('Unauthorized invoice download attempt', [
+                'order_id' => $order->id,
+                'order_user_id' => $order->user_id,
+                'current_user_id' => $user->id,
+                'is_admin' => $isAdmin
+            ]);
             abort(403, 'Unauthorized access to this order');
         }
         
@@ -236,12 +293,42 @@ class OrderController extends Controller
         return $pdf->download($filename);
     }
 
-    public function show(Order $order)
+    public function show(Request $request, $order)
     {
         $user = auth()->user();
-        if ($order->user_id !== $user->id) {
+        
+        if (!$user) {
+            Log::error('User not authenticated for show order');
+            abort(403, 'User not authenticated');
+        }
+        
+        // Get order by ID (handle both object and ID from route model binding)
+        if (is_object($order) && $order instanceof Order) {
+            // Route model binding worked, use the order directly
+            $order = $order;
+        } else {
+            // Route model binding didn't work, get order by ID
+            $order = Order::findOrFail($order);
+        }
+        
+        Log::info('show order check', [
+            'order_id' => $order->id,
+            'order_user_id' => $order->user_id,
+            'current_user_id' => $user->id,
+            'match' => $order->user_id == $user->id,
+            'request_route' => $request->route()->getName(),
+            'request_url' => $request->fullUrl()
+        ]);
+        
+        if ($order->user_id != $user->id) {
+            Log::warning('Unauthorized order view attempt', [
+                'order_id' => $order->id,
+                'order_user_id' => $order->user_id,
+                'current_user_id' => $user->id
+            ]);
             abort(403, 'Unauthorized access to this order');
         }
+        
         $order->load(['details.menu', 'payment', 'user']);
         return view('orders.show', compact('order'));
     }

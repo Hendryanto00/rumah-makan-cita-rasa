@@ -17,47 +17,43 @@
     
     <!-- Search and Filter -->
     <div class="px-4 md:px-6 py-4 border-b border-gray-200 bg-gray-50">
-        <form method="GET" action="{{ route('admin.menus.index') }}" class="flex flex-col gap-3">
-            <div class="flex flex-col sm:flex-row gap-3">
-                <div class="flex-1 relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-gray-400"></i>
-                    </div>
-                    <input type="text" 
-                           name="search"
-                           id="search-input"
-                           placeholder="Cari menu, kategori, atau deskripsi..." 
-                           class="w-full pl-12 pr-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-sm md:text-base bg-white"
-                           value="{{ request('search') }}">
+        <form method="GET" action="{{ route('admin.menus.index') }}" class="flex flex-col sm:flex-row gap-3">
+            <div class="flex-1 relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
                 </div>
-                <div class="sm:w-56 relative">
-                    <select name="category" id="category-filter" class="w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-sm md:text-base bg-white appearance-none cursor-pointer">
-                        <option value="">Semua Kategori</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                                {{ $category->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                        <i class="fas fa-chevron-down text-gray-400"></i>
-                    </div>
-                </div>
-                <div class="sm:w-52 relative">
-                    <select name="status" id="status-filter" class="w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-sm md:text-base bg-white appearance-none cursor-pointer">
-                        <option value="">Semua Status</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
-                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                        <i class="fas fa-chevron-down text-gray-400"></i>
-                    </div>
+                <input type="text" 
+                       name="search"
+                       id="search-input"
+                       placeholder="Cari menu, kategori, atau deskripsi..." 
+                       class="w-full pl-12 pr-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-sm md:text-base bg-white"
+                       value="{{ request('search') }}">
+            </div>
+            <button type="submit" class="sm:w-auto px-6 bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg transition-colors text-sm md:text-base font-medium whitespace-nowrap">
+                <i class="fas fa-search mr-2"></i>Cari
+            </button>
+            <div class="sm:w-56 relative">
+                <select name="category" id="category-filter" class="w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-sm md:text-base bg-white appearance-none cursor-pointer">
+                    <option value="">Semua Kategori</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                    <i class="fas fa-chevron-down text-gray-400"></i>
                 </div>
             </div>
-            <div class="flex gap-3">
-                <button type="submit" class="flex-1 sm:flex-none sm:px-6 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2.5 rounded-lg transition-colors text-sm md:text-base font-medium">
-                    <i class="fas fa-search mr-2"></i>Cari
-                </button>
+            <div class="sm:w-52 relative">
+                <select name="status" id="status-filter" class="w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-sm md:text-base bg-white appearance-none cursor-pointer">
+                    <option value="">Semua Status</option>
+                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
+                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                    <i class="fas fa-chevron-down text-gray-400"></i>
+                </div>
             </div>
         </form>
     </div>
@@ -250,6 +246,8 @@ document.addEventListener('DOMContentLoaded', function(){
         form.addEventListener('submit', function(e){
             if (!window.Swal) return; // fallback silently if Swal not loaded
             e.preventDefault();
+            // Save scroll position before showing confirmation
+            sessionStorage.setItem('menu_scroll_position', window.pageYOffset || document.documentElement.scrollTop);
             Swal.fire({
                 title: 'Hapus menu ini?',
                 text: 'Tindakan ini tidak dapat dibatalkan.',
@@ -282,19 +280,33 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     
     // Search with debounce (auto-submit after user stops typing)
+    // Only submit if user actually typed something (not programmatic changes)
     const searchInput = document.getElementById('search-input');
     let searchTimeout;
+    let isUserTyping = false;
     
     if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            const searchForm = document.querySelector('form[action="{{ route("admin.menus.index") }}"]');
-            searchTimeout = setTimeout(function() {
-                // Auto-submit after 800ms of no typing
-                if (searchForm) {
-                    searchForm.submit();
-                }
-            }, 800);
+        const searchForm = document.querySelector('form[action="{{ route("admin.menus.index") }}"]');
+        
+        // Track when user is actually typing
+        searchInput.addEventListener('focus', function() {
+            isUserTyping = true;
+        });
+        
+        searchInput.addEventListener('blur', function() {
+            isUserTyping = false;
+        });
+        
+        searchInput.addEventListener('input', function(e) {
+            // Only auto-submit if user is actually typing (not programmatic)
+            if (isUserTyping && e.isTrusted) {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    if (document.activeElement === searchInput && searchForm) {
+                        searchForm.submit();
+                    }
+                }, 800);
+            }
         });
         
         // Also submit on Enter key
@@ -302,7 +314,6 @@ document.addEventListener('DOMContentLoaded', function(){
             if (e.key === 'Enter') {
                 e.preventDefault();
                 clearTimeout(searchTimeout);
-                const searchForm = document.querySelector('form[action="{{ route("admin.menus.index") }}"]');
                 if (searchForm) {
                     searchForm.submit();
                 }

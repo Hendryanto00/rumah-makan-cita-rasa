@@ -53,8 +53,15 @@ class ReviewController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Review $review)
+    public function show(Request $request, $review)
     {
+        // Get review by ID (handle both object and ID from route model binding)
+        if (is_object($review) && $review instanceof Review) {
+            $review = $review;
+        } else {
+            $review = Review::findOrFail($review);
+        }
+        
         Gate::authorize('view', $review);
 
         $review->load(['user', 'menu']);
@@ -66,8 +73,15 @@ class ReviewController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateReviewRequest $request, Review $review)
+    public function update(UpdateReviewRequest $request, $review)
     {
+        // Get review by ID (handle both object and ID from route model binding)
+        if (is_object($review) && $review instanceof Review) {
+            $review = $review;
+        } else {
+            $review = Review::findOrFail($review);
+        }
+        
         Gate::authorize('update', $review);
 
         $review->update([
@@ -83,8 +97,15 @@ class ReviewController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Review $review)
+    public function destroy(Request $request, $review)
     {
+        // Get review by ID (handle both object and ID from route model binding)
+        if (is_object($review) && $review instanceof Review) {
+            $review = $review;
+        } else {
+            $review = Review::findOrFail($review);
+        }
+        
         Gate::authorize('delete', $review);
 
         $review->delete();
@@ -96,8 +117,15 @@ class ReviewController extends Controller
     /**
      * Get reviews for a specific menu (public method)
      */
-    public function getMenuReviews(Menu $menu)
+    public function getMenuReviews(Request $request, $menu)
     {
+        // Get menu by ID (handle both object and ID from route model binding)
+        if (is_object($menu) && $menu instanceof Menu) {
+            $menu = $menu;
+        } else {
+            $menu = Menu::findOrFail($menu);
+        }
+        
         $reviews = $menu->reviews()
             ->where('status', 'approved')
             ->with('user')

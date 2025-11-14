@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Smooth scroll for all pages */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Ensure smooth scrolling on mobile */
+* {
+    -webkit-overflow-scrolling: touch;
+}
+
+body {
+    overflow-x: hidden;
+}

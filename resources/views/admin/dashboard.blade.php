@@ -112,7 +112,7 @@
         <div class="bg-white rounded-2xl shadow">
             <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                 <h2 class="text-lg font-bold text-gray-900">Pesanan Terbaru</h2>
-                <a href="#" class="text-sm text-orange-600 hover:text-orange-700">Lihat Semua</a>
+                <a href="{{ route('admin.orders.index') }}" class="text-sm text-orange-600 hover:text-orange-700">Lihat Semua</a>
             </div>
             <!-- Desktop/tablet table -->
             <div class="overflow-x-auto hidden md:block">

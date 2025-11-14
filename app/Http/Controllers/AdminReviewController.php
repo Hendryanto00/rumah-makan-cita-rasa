@@ -60,8 +60,15 @@ class AdminReviewController extends Controller
     /**
      * Display the specified review.
      */
-    public function show(Review $review)
+    public function show(Request $request, $review)
     {
+        // Get review by ID (handle both object and ID from route model binding)
+        if (is_object($review) && $review instanceof Review) {
+            $review = $review;
+        } else {
+            $review = Review::findOrFail($review);
+        }
+        
         Gate::authorize('moderate', Review::class);
         
         $review->load(['user', 'menu']);
@@ -72,8 +79,15 @@ class AdminReviewController extends Controller
     /**
      * Approve a review.
      */
-    public function approve(Review $review)
+    public function approve(Request $request, $review)
     {
+        // Get review by ID (handle both object and ID from route model binding)
+        if (is_object($review) && $review instanceof Review) {
+            $review = $review;
+        } else {
+            $review = Review::findOrFail($review);
+        }
+        
         Gate::authorize('moderate', Review::class);
         
         $review->update(['status' => 'approved']);
@@ -94,8 +108,15 @@ class AdminReviewController extends Controller
     /**
      * Hide a review.
      */
-    public function hide(Review $review)
+    public function hide(Request $request, $review)
     {
+        // Get review by ID (handle both object and ID from route model binding)
+        if (is_object($review) && $review instanceof Review) {
+            $review = $review;
+        } else {
+            $review = Review::findOrFail($review);
+        }
+        
         Gate::authorize('moderate', Review::class);
         
         $review->update(['status' => 'hidden']);
@@ -116,8 +137,15 @@ class AdminReviewController extends Controller
     /**
      * Unhide a review (show it again).
      */
-    public function unhide(Review $review)
+    public function unhide(Request $request, $review)
     {
+        // Get review by ID (handle both object and ID from route model binding)
+        if (is_object($review) && $review instanceof Review) {
+            $review = $review;
+        } else {
+            $review = Review::findOrFail($review);
+        }
+        
         Gate::authorize('moderate', Review::class);
         
         $review->update(['status' => 'approved']);
@@ -138,8 +166,15 @@ class AdminReviewController extends Controller
     /**
      * Reject a review (delete).
      */
-    public function reject(Review $review)
+    public function reject(Request $request, $review)
     {
+        // Get review by ID (handle both object and ID from route model binding)
+        if (is_object($review) && $review instanceof Review) {
+            $review = $review;
+        } else {
+            $review = Review::findOrFail($review);
+        }
+        
         Gate::authorize('moderate', Review::class);
         
         $menuId = $review->menu_id;

@@ -22,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Set default locale to Indonesian
+        app()->setLocale('id');
+        
         // Register Review Policy
         Gate::policy(Review::class, ReviewPolicy::class);
         
@@ -34,5 +37,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('owner-only', function ($user) {
             return $user->role && $user->role->name === 'owner';
         });
+        
+        // Set pagination to Indonesian
+        \Illuminate\Pagination\Paginator::useBootstrap();
     }
 }

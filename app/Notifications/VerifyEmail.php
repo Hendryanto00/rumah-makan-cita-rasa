@@ -48,6 +48,7 @@ class VerifyEmail extends Notification
             ->line('Silakan klik tombol di bawah ini untuk memverifikasi alamat email Anda.')
             ->action('Verifikasi Email', $verificationUrl)
             ->line('Jika Anda tidak membuat akun ini, tidak ada tindakan lebih lanjut yang diperlukan.')
+            ->line('Catatan: Link verifikasi ini akan berakhir dalam 60 menit.')
             ->salutation('Salam, Tim Rumah Makan Cita Rasa');
     }
 

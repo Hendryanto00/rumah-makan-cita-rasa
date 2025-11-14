@@ -59,7 +59,7 @@
                         $stepLabel = $statusLabels[$step] ?? ucfirst($step);
                     @endphp
                     <div class="flex items-center flex-1">
-                        <div class="flex flex-col items-center flex-1">
+                        <div class="flex flex-col items-center flex-1 min-w-0">
                             <div class="flex items-center justify-center h-10 w-10 rounded-full text-sm font-bold {{ $active ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md' : 'bg-gray-200 text-gray-500' }}">
                                 @if($active && $i === $current)
                                     <i class="fas fa-check"></i>
@@ -67,7 +67,7 @@
                                     {{ $i + 1 }}
                                 @endif
                             </div>
-                            <div class="mt-2 text-xs font-medium {{ $active ? 'text-gray-900' : 'text-gray-400' }} text-center">
+                            <div class="mt-2 text-xs font-medium {{ $active ? 'text-gray-900' : 'text-gray-400' }} text-center whitespace-nowrap">
                                 {{ $stepLabel }}
                             </div>
                         </div>

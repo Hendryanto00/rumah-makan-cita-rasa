@@ -12,22 +12,22 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Menu Information -->
                         <div class="bg-gray-50 p-6 rounded-lg">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Menu Information</h3>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Informasi Menu</h3>
                             <div class="space-y-3">
                                 <div>
-                                    <span class="font-medium text-gray-700">Name:</span>
+                                    <span class="font-medium text-gray-700">Nama:</span>
                                     <span class="ml-2 text-gray-900">{{ $review->menu->name }}</span>
                                 </div>
                                 <div>
-                                    <span class="font-medium text-gray-700">Description:</span>
+                                    <span class="font-medium text-gray-700">Deskripsi:</span>
                                     <p class="mt-1 text-gray-900">{{ $review->menu->description }}</p>
                                 </div>
                                 <div>
-                                    <span class="font-medium text-gray-700">Price:</span>
+                                    <span class="font-medium text-gray-700">Harga:</span>
                                     <span class="ml-2 text-gray-900">Rp {{ number_format($review->menu->price, 0, ',', '.') }}</span>
                                 </div>
                                 <div>
-                                    <span class="font-medium text-gray-700">Category:</span>
+                                    <span class="font-medium text-gray-700">Kategori:</span>
                                     <span class="ml-2 text-gray-900">{{ $review->menu->category->name }}</span>
                                 </div>
                             </div>
@@ -35,10 +35,10 @@
 
                         <!-- Review Information -->
                         <div class="bg-gray-50 p-6 rounded-lg">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Review Information</h3>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Informasi Review</h3>
                             <div class="space-y-3">
                                 <div>
-                                    <span class="font-medium text-gray-700">Rating:</span>
+                                    <span class="font-medium text-gray-700">Penilaian:</span>
                                     <div class="flex items-center mt-1">
                                         @for($i = 1; $i <= 5; $i++)
                                             @if($i <= $review->rating)
@@ -60,33 +60,33 @@
                                     <span class="ml-2">
                                         @if($review->status === 'approved')
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                Approved
+                                                Disetujui
                                             </span>
                                         @elseif($review->status === 'pending')
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                Pending
+                                                Menunggu
                                             </span>
                                         @else
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                Hidden
+                                                Disembunyikan
                                             </span>
                                         @endif
                                     </span>
                                 </div>
 
                                 <div>
-                                    <span class="font-medium text-gray-700">Reviewer:</span>
+                                    <span class="font-medium text-gray-700">Pengulas:</span>
                                     <span class="ml-2 text-gray-900">{{ $review->user->name }}</span>
                                 </div>
 
                                 <div>
-                                    <span class="font-medium text-gray-700">Date:</span>
-                                    <span class="ml-2 text-gray-900">{{ $review->created_at->format('M d, Y \a\t g:i A') }}</span>
+                                    <span class="font-medium text-gray-700">Tanggal:</span>
+                                    <span class="ml-2 text-gray-900">{{ $review->created_at->format('d M Y \p\u\k\u\l H:i') }}</span>
                                 </div>
 
                                 @if($review->comment)
                                     <div>
-                                        <span class="font-medium text-gray-700">Comment:</span>
+                                        <span class="font-medium text-gray-700">Komentar:</span>
                                         <p class="mt-1 text-gray-900 bg-white p-3 rounded border">{{ $review->comment }}</p>
                                     </div>
                                 @endif
@@ -98,14 +98,14 @@
                     <div class="mt-6 flex items-center justify-between">
                         <a href="{{ route('reviews.index') }}" 
                            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                            Back to Reviews
+                            Kembali ke Review
                         </a>
                         
                         <div class="flex space-x-2">
                             @if($review->canBeEditedBy(auth()->user()))
                                 <a href="{{ route('reviews.edit', $review) }}" 
                                    class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
-                                    Edit Review
+                                    Ubah Review
                                 </a>
                             @endif
                             
@@ -116,7 +116,7 @@
                                     <button type="submit" 
                                             class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                                             onclick="return confirm('Apakah Anda yakin ingin menghapus review ini?')">
-                                        Delete Review
+                                        Hapus Review
                                     </button>
                                 </form>
                             @endif

@@ -12,7 +12,7 @@
     
     <!-- Search and Filter -->
     <div class="px-4 md:px-6 py-4 border-b border-gray-200 bg-gray-50">
-        <form method="GET" action="{{ route('admin.orders.index') }}" class="flex flex-col md:flex-row gap-3">
+        <form method="GET" action="{{ route('admin.orders.index') }}" class="flex flex-col sm:flex-row gap-3">
             <div class="flex-1 relative">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i class="fas fa-search text-gray-400"></i>
@@ -21,11 +21,14 @@
                        name="search"
                        id="search-input"
                        placeholder="Cari ID pesanan, nama pelanggan, atau email..." 
-                       class="w-full pl-12 pr-4 py-2.5 rounded-xl border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-sm md:text-base bg-white"
+                       class="w-full pl-12 pr-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-sm md:text-base bg-white"
                        value="{{ request('search') }}">
             </div>
-            <div class="md:w-56 relative">
-                <select name="status" id="status-filter" class="w-full pl-4 pr-12 py-2.5 rounded-xl border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-sm md:text-base bg-white appearance-none cursor-pointer">
+            <button type="submit" class="sm:w-auto px-6 bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg transition-colors text-sm md:text-base font-medium whitespace-nowrap">
+                <i class="fas fa-search mr-2"></i>Cari
+            </button>
+            <div class="sm:w-56 relative">
+                <select name="status" id="status-filter" class="w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-sm md:text-base bg-white appearance-none cursor-pointer">
                     <option value="all" {{ request('status', 'all') == 'all' ? 'selected' : '' }}>Semua Status</option>
                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu</option>
                     <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }}>Sudah Bayar</option>
@@ -37,10 +40,6 @@
                     <i class="fas fa-chevron-down text-gray-400"></i>
                 </div>
             </div>
-            <button type="submit" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2.5 rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 text-sm md:text-base font-semibold shadow-md hover:shadow-lg transform hover:scale-105 whitespace-nowrap">
-                <i class="fas fa-search mr-2"></i>
-                <span class="hidden sm:inline">Cari</span>
-            </button>
         </form>
     </div>
     
@@ -242,15 +241,31 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     
     // Search with debounce (auto-submit after user stops typing)
+    // Only submit if user actually typed something (not programmatic changes)
     const searchInput = document.getElementById('search-input');
     let searchTimeout;
+    let isUserTyping = false;
     
     if (searchInput && searchForm) {
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(function() {
-                searchForm.submit();
-            }, 800);
+        // Track when user is actually typing
+        searchInput.addEventListener('focus', function() {
+            isUserTyping = true;
+        });
+        
+        searchInput.addEventListener('blur', function() {
+            isUserTyping = false;
+        });
+        
+        searchInput.addEventListener('input', function(e) {
+            // Only auto-submit if user is actually typing (not programmatic)
+            if (isUserTyping && e.isTrusted) {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    if (document.activeElement === searchInput) {
+                        searchForm.submit();
+                    }
+                }, 800);
+            }
         });
         
         // Also submit on Enter key
@@ -263,80 +278,10 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     }
     
-    // Real-time orders polling
-    let lastOrderCheck = new Date().toISOString();
-    let ordersUpdateInterval;
-    let currentOrderCount = {{ $orders->count() }};
-    let currentStatus = '{{ request("status", "all") }}';
-    let currentSearch = '{{ request("search", "") }}';
-    let latestOrderId = {{ $orders->first() ? $orders->first()->id : 0 }};
-    
-    function checkNewOrders() {
-        const statusParam = currentStatus !== 'all' ? `&status=${currentStatus}` : '';
-        const searchParam = currentSearch ? `&search=${encodeURIComponent(currentSearch)}` : '';
-        
-        fetch(`{{ route('api.orders-count') }}?last_check=${encodeURIComponent(lastOrderCheck)}${statusParam}${searchParam}`, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Check if there's a new order (by comparing latest order ID)
-                if (data.latest_order_id && data.latest_order_id > latestOrderId) {
-                    // New order detected, reload the page
-                    window.location.reload();
-                } else if (data.total_count !== currentOrderCount) {
-                    // Count changed, might be new order or deleted order
-                    if (data.total_count > currentOrderCount) {
-                        // New order, reload
-                        window.location.reload();
-                    } else {
-                        // Order deleted, update count
-                        currentOrderCount = data.total_count;
-                    }
-                }
-                
-                // Update latest order ID if available
-                if (data.latest_order_id) {
-                    latestOrderId = data.latest_order_id;
-                }
-                
-                // Update last check time
-                if (data.timestamp) {
-                    lastOrderCheck = data.timestamp;
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Orders update check error:', error);
-        });
-    }
-    
-    // Start polling every 3 seconds for admin (more frequent)
-    if (typeof ordersUpdateInterval === 'undefined') {
-        ordersUpdateInterval = setInterval(checkNewOrders, 3000);
-    }
-    
-    // Stop polling when page is hidden (to save resources)
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            if (ordersUpdateInterval) clearInterval(ordersUpdateInterval);
-        } else {
-            if (!ordersUpdateInterval) {
-                ordersUpdateInterval = setInterval(checkNewOrders, 3000);
-            }
-        }
-    });
-    
     // Update current filters when form is submitted
     if (searchForm) {
         searchForm.addEventListener('submit', function() {
-            currentStatus = statusFilter ? statusFilter.value : 'all';
-            currentSearch = searchInput ? searchInput.value : '';
+            // Form submitted normally
         });
     }
 });

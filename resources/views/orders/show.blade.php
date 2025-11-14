@@ -51,7 +51,7 @@
                         @php $active = ($order->status !== 'batal') ? $i <= $current : false; @endphp
                         <div class="flex items-center w-full">
                             <div class="flex items-center justify-center h-8 w-8 rounded-full text-xs font-bold {{ $active ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-500' }}">{{ $i+1 }}</div>
-                            <div class="mx-2 text-xs {{ $active ? 'text-gray-800' : 'text-gray-400' }}">{{ $labelMap[$step] }}</div>
+                            <div class="mx-2 text-xs {{ $active ? 'text-gray-800' : 'text-gray-400' }} whitespace-nowrap">{{ $labelMap[$step] }}</div>
                             @if(!$loop->last)
                                 <div class="flex-1 h-1 {{ $active ? 'bg-orange-300' : 'bg-gray-200' }}"></div>
                             @endif

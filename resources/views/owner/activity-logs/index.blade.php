@@ -33,7 +33,7 @@
                     <input type="date" 
                            id="start_date" 
                            name="start_date" 
-                           value="{{ $startDate }}"
+                           value="{{ old('start_date', $startDate) }}"
                            class="w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200 px-4 py-2.5 text-gray-700 transition"
                            max="{{ now()->format('Y-m-d') }}">
                 </div>
@@ -44,7 +44,7 @@
                     <input type="date" 
                            id="end_date" 
                            name="end_date" 
-                           value="{{ $endDate }}"
+                           value="{{ old('end_date', $endDate) }}"
                            class="w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200 px-4 py-2.5 text-gray-700 transition"
                            max="{{ now()->format('Y-m-d') }}">
                 </div>

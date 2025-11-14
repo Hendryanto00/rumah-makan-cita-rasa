@@ -103,7 +103,7 @@
                                                     <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                     </svg>
-                                                    Edit Review
+                                                    Ubah Review
                                                 </button>
                                                 <button type="button" 
                                                         onclick="confirmDelete({{ $review->id }})"
@@ -111,7 +111,7 @@
                                                     <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                     </svg>
-                                                    Delete Review
+                                                    Hapus Review
                                                 </button>
                                                 
                                                 <!-- Hidden form for delete -->
@@ -124,7 +124,7 @@
                                                     <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                                                     </svg>
-                                                    Not your review
+                                                    Bukan review Anda
                                                 </span>
                                             @endif
                                         @else
@@ -132,7 +132,7 @@
                                                 <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                                                 </svg>
-                                                Login to manage
+                                                Login untuk mengelola
                                             </span>
                                         @endauth
                                     </div>
@@ -169,8 +169,8 @@
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">No reviews yet</h3>
-                <p class="mt-1 text-sm text-gray-500">Be the first to review this menu!</p>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada review</h3>
+                <p class="mt-1 text-sm text-gray-500">Jadilah yang pertama memberikan review untuk menu ini!</p>
             </div>
         @endif
 
@@ -182,13 +182,13 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                     </svg>
-                    Write a Review
+                    Tulis Review
                 </a>
             </div>
         @else
             <div class="mt-6 pt-6 border-t border-gray-200">
                 <p class="text-sm text-gray-500">
-                    <a href="{{ route('login') }}" class="text-orange-600 hover:text-orange-500">Sign in</a> to write a review.
+                    <a href="{{ route('login') }}" class="text-orange-600 hover:text-orange-500">Masuk</a> untuk menulis review.
                 </p>
             </div>
         @endauth
@@ -201,7 +201,7 @@
         <div class="mt-3">
             <!-- Modal Header -->
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-medium text-gray-900">Edit Review</h3>
+                <h3 class="text-lg font-medium text-gray-900">Ubah Review</h3>
                 <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -216,7 +216,7 @@
                 
                 <!-- Rating -->
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Penilaian</label>
                     <div class="flex items-center space-x-2" id="ratingContainer">
                         @for($i = 1; $i <= 5; $i++)
                             <label class="cursor-pointer">
@@ -248,7 +248,7 @@
                     </button>
                     <button type="submit" 
                             class="px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        Update Review
+                        Perbarui Review
                     </button>
                 </div>
             </form>

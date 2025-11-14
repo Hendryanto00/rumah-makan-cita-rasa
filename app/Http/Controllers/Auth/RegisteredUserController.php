@@ -58,6 +58,9 @@ class RegisteredUserController extends Controller
         // Atau buat custom notification di: app/Notifications/VerifyEmail.php
         $user->sendEmailVerificationNotification();
 
+        // Regenerate session to prevent page expired
+        $request->session()->regenerate();
+
         return redirect()->route('verification.notice');
     }
 }

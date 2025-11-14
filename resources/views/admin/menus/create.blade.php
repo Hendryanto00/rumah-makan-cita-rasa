@@ -174,6 +174,8 @@ document.addEventListener('DOMContentLoaded', function(){
     if (form) {
         form.addEventListener('submit', function(e){
             e.preventDefault();
+            // Save scroll position before showing confirmation
+            sessionStorage.setItem('menu_scroll_position', window.pageYOffset || document.documentElement.scrollTop);
             if (typeof Swal === 'undefined') { form.submit(); return; }
             Swal.fire({
                 title: 'Simpan menu baru?',

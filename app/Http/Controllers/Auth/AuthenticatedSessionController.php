@@ -30,8 +30,8 @@ class AuthenticatedSessionController extends Controller
         
         $user = $request->user();
         
-        // Jika belum verifikasi, arahkan ke halaman verifikasi
-        if (! $user->hasVerifiedEmail()) {
+        // Jika belum verifikasi, arahkan ke halaman verifikasi (kecuali sudah di halaman verifikasi)
+        if (! $user->hasVerifiedEmail() && ! $request->expectsJson()) {
             return redirect()->route('verification.notice');
         }
 

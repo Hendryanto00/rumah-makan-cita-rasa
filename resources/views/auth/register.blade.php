@@ -7,7 +7,7 @@
         Silahkan isi form di bawah untuk mendaftar
     </p>
 
-    <form method="POST" action="{{ route('register') }}" class="space-y-4">
+    <form method="POST" action="{{ route('register') }}" id="register-form" class="space-y-4">
         @csrf
 
         <!-- Name -->
@@ -105,9 +105,56 @@
                 Sudah terdaftar?
             </a>
 
-            <x-primary-button class="ms-3 bg-orange-500 hover:bg-orange-600 focus:ring-orange-400">
-                Daftar
+            <x-primary-button id="register-button" type="submit" class="ms-3 bg-orange-500 hover:bg-orange-600 focus:ring-orange-400">
+                <span id="register-button-text">Daftar</span>
+                <span id="register-button-loading" class="hidden">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>Mendaftar...
+                </span>
             </x-primary-button>
         </div>
     </form>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('register-form');
+        const submitButton = document.getElementById('register-button');
+        const buttonText = document.getElementById('register-button-text');
+        const buttonLoading = document.getElementById('register-button-loading');
+        let isSubmitting = false;
+        
+        if (form && submitButton) {
+            // Prevent double submit
+            form.addEventListener('submit', function(e) {
+                // Prevent double submit
+                if (isSubmitting) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                
+                isSubmitting = true;
+                
+                // Disable button immediately and show loading
+                submitButton.disabled = true;
+                submitButton.setAttribute('disabled', 'disabled');
+                submitButton.classList.add('opacity-75', 'cursor-not-allowed');
+                buttonText.classList.add('hidden');
+                buttonLoading.classList.remove('hidden');
+                
+                // Update CSRF token from meta tag if available
+                const metaToken = document.head.querySelector('meta[name="csrf-token"]');
+                const csrfInput = form.querySelector('input[name="_token"]');
+                if (metaToken && csrfInput) {
+                    csrfInput.value = metaToken.content;
+                }
+                
+                // Allow form to submit normally
+                // Form will submit with current CSRF token
+            });
+            
+            // Re-enable button if form validation fails (page reloads with errors)
+            // This is handled by page reload, so we don't need to do anything
+        }
+    });
+    </script>
 </x-guest-layout>

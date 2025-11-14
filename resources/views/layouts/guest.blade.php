@@ -16,6 +16,16 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <script>
+            // Ensure CSRF token is refreshed on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                const token = document.head.querySelector('meta[name="csrf-token"]');
+                if (token && window.axios) {
+                    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+                }
+            });
+        </script>
     </head>
     <body class="font-sans text-gray-900 antialiased">
 

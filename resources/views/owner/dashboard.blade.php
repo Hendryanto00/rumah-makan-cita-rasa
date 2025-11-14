@@ -158,24 +158,28 @@
     </div>
     
     <!-- Sales Trend Charts -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Sales Trend (7 Days) -->
         <div class="bg-white rounded-2xl shadow">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h2 class="text-lg font-bold text-gray-900">Tren Penjualan (7 Hari Terakhir)</h2>
+            <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
+                <h2 class="text-base sm:text-lg font-bold text-gray-900">Tren Penjualan (7 Hari Terakhir)</h2>
             </div>
-            <div class="p-6">
-                <canvas id="salesTrendChart" class="w-full h-64"></canvas>
+            <div class="p-3 sm:p-4 md:p-6">
+                <div class="relative w-full" style="height: 250px; min-height: 250px;">
+                    <canvas id="salesTrendChart" class="w-full h-full"></canvas>
+                </div>
             </div>
         </div>
         
         <!-- Monthly Sales Trend -->
         <div class="bg-white rounded-2xl shadow">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h2 class="text-lg font-bold text-gray-900">Tren Penjualan Bulanan (6 Bulan)</h2>
+            <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
+                <h2 class="text-base sm:text-lg font-bold text-gray-900">Tren Penjualan Bulanan (6 Bulan)</h2>
             </div>
-            <div class="p-6">
-                <canvas id="monthlySalesTrendChart" class="w-full h-64"></canvas>
+            <div class="p-3 sm:p-4 md:p-6">
+                <div class="relative w-full" style="height: 250px; min-height: 250px;">
+                    <canvas id="monthlySalesTrendChart" class="w-full h-full"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -465,8 +469,14 @@
 
 @push('scripts')
 <script>
+    // Function to detect mobile
+    function isMobile() {
+        return window.innerWidth < 640;
+    }
+    
     // Sales Trend Chart (7 Days)
     const salesTrendCtx = document.getElementById('salesTrendChart');
+    let salesTrendChart;
     if (salesTrendCtx) {
         const salesTrendData = @json($salesTrend);
         const revenueValues = salesTrendData.map(i => i.revenue);
@@ -474,7 +484,7 @@
         const maxRevenue = Math.max(1, ...revenueValues);
         const maxOrders = Math.max(1, ...orderValues);
 
-        new Chart(salesTrendCtx, {
+        salesTrendChart = new Chart(salesTrendCtx, {
             type: 'line',
             data: {
                 labels: salesTrendData.map(item => item.day_short),
@@ -515,12 +525,26 @@
                     legend: {
                         display: true,
                         position: 'top',
-                        labels: { boxWidth: 12 }
+                        labels: { 
+                            boxWidth: isMobile() ? 10 : 12,
+                            font: {
+                                size: isMobile() ? 10 : 12
+                            },
+                            padding: isMobile() ? 8 : 12
+                        }
                     }
                 },
                 interaction: {
                     mode: 'index',
                     intersect: false,
+                },
+                layout: {
+                    padding: {
+                        left: isMobile() ? 8 : 15,
+                        right: isMobile() ? 8 : 15,
+                        top: 10,
+                        bottom: 10
+                    }
                 },
                 scales: {
                     y: {
@@ -529,7 +553,12 @@
                         position: 'left',
                         title: {
                             display: true,
-                            text: 'Pendapatan (Rp)'
+                            text: 'Pendapatan (Rp)',
+                            padding: { top: 10, bottom: 10, left: isMobile() ? 0 : 5, right: 0 },
+                            font: {
+                                size: isMobile() ? 10 : 12,
+                                weight: 'bold'
+                            }
                         },
                         ticks: {
                             callback: function(value) {
@@ -537,7 +566,12 @@
                                 if (n >= 1_000_000) return 'Rp ' + (n/1_000_000).toFixed(1) + 'M';
                                 if (n >= 1_000) return 'Rp ' + (n/1_000).toFixed(0) + 'k';
                                 return 'Rp ' + n;
-                            }
+                            },
+                            font: {
+                                size: isMobile() ? 9 : 11
+                            },
+                            maxRotation: isMobile() ? 45 : 0,
+                            padding: isMobile() ? 3 : 8
                         },
                         grid: {
                             color: 'rgba(0, 0, 0, 0.05)'
@@ -550,33 +584,62 @@
                         position: 'right',
                         title: {
                             display: true,
-                            text: 'Jumlah Pesanan'
+                            text: 'Jumlah Pesanan',
+                            padding: { top: 10, bottom: 10, left: 0, right: isMobile() ? 0 : 5 },
+                            font: {
+                                size: isMobile() ? 10 : 12,
+                                weight: 'bold'
+                            }
                         },
                         grid: {
                             drawOnChartArea: false,
                         },
                         ticks: {
-                            color: 'rgb(59, 130, 246)'
+                            color: 'rgb(59, 130, 246)',
+                            font: {
+                                size: isMobile() ? 9 : 11
+                            },
+                            padding: isMobile() ? 3 : 8
                         },
                         suggestedMax: Math.ceil(maxOrders * 1.2)
                     },
                     x: {
                         grid: {
                             display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: isMobile() ? 9 : 11
+                            },
+                            maxRotation: isMobile() ? 45 : 0,
+                            minRotation: isMobile() ? 45 : 0,
+                            padding: isMobile() ? 3 : 8
                         }
                     }
                 }
             }
         });
+        
+        // Resize chart on window resize
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                if (salesTrendChart) {
+                    salesTrendChart.resize();
+                }
+            }, 250);
+        });
     }
     
     // Monthly Sales Trend Chart
     const monthlySalesTrendCtx = document.getElementById('monthlySalesTrendChart');
+    let monthlySalesTrendChart;
     if (monthlySalesTrendCtx) {
         const monthlySalesTrendData = @json($monthlySalesTrend);
         const monthlyRevenues = monthlySalesTrendData.map(item => item.revenue);
         const monthlyMax = Math.max(1, ...monthlyRevenues);
-        new Chart(monthlySalesTrendCtx, {
+        monthlySalesTrendChart = new Chart(monthlySalesTrendCtx, {
             type: 'bar',
             data: {
                 labels: monthlySalesTrendData.map(item => item.month_short),
@@ -597,7 +660,21 @@
                     legend: {
                         display: true,
                         position: 'top',
-                        labels: { boxWidth: 12 }
+                        labels: { 
+                            boxWidth: isMobile() ? 10 : 12,
+                            font: {
+                                size: isMobile() ? 10 : 12
+                            },
+                            padding: isMobile() ? 8 : 12
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        left: isMobile() ? 8 : 15,
+                        right: isMobile() ? 8 : 15,
+                        top: 10,
+                        bottom: 10
                     }
                 },
                 scales: {
@@ -605,7 +682,12 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Pendapatan (Rp)'
+                            text: 'Pendapatan (Rp)',
+                            padding: { top: 10, bottom: 10, left: isMobile() ? 0 : 5, right: 0 },
+                            font: {
+                                size: isMobile() ? 10 : 12,
+                                weight: 'bold'
+                            }
                         },
                         ticks: {
                             callback: function(value) {
@@ -613,7 +695,12 @@
                                 if (n >= 1_000_000) return 'Rp ' + (n/1_000_000).toFixed(1) + 'M';
                                 if (n >= 1_000) return 'Rp ' + (n/1_000).toFixed(0) + 'k';
                                 return 'Rp ' + n;
-                            }
+                            },
+                            font: {
+                                size: isMobile() ? 9 : 11
+                            },
+                            maxRotation: isMobile() ? 45 : 0,
+                            padding: isMobile() ? 3 : 8
                         },
                         grid: {
                             color: 'rgba(0, 0, 0, 0.05)'
@@ -623,10 +710,29 @@
                     x: {
                         grid: {
                             display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: isMobile() ? 9 : 11
+                            },
+                            maxRotation: isMobile() ? 45 : 0,
+                            minRotation: isMobile() ? 45 : 0,
+                            padding: isMobile() ? 3 : 8
                         }
                     }
                 }
             }
+        });
+        
+        // Resize chart on window resize
+        let resizeTimer2;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer2);
+            resizeTimer2 = setTimeout(function() {
+                if (monthlySalesTrendChart) {
+                    monthlySalesTrendChart.resize();
+                }
+            }, 250);
         });
     }
 </script>
