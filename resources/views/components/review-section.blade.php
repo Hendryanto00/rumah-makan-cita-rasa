@@ -16,7 +16,7 @@
             if(auth()->check()) {
                 $q->orWhere(function($subQ) {
                     $subQ->where('status', 'pending')
-                         ->where('user_id', auth()->id());
+                         ->where('user_id', (int) auth()->id());
                 });
             }
         })->with('user')->latest();
@@ -24,7 +24,7 @@
         $reviews = $query->paginate(5);
         $averageRating = $menu->reviews()->where('status', 'approved')->avg('rating');
         $totalReviews = $menu->reviews()->where('status', 'approved')->count();
-        $hasUserPendingReview = auth()->check() && $menu->reviews()->where('status', 'pending')->where('user_id', auth()->id())->exists();
+        $hasUserPendingReview = auth()->check() && $menu->reviews()->where('status', 'pending')->where('user_id', (int) auth()->id())->exists();
         @endphp
 
         @if($reviews->count() > 0)
@@ -81,7 +81,10 @@
                                             @endif
                                         @endfor
                                     </div>
-                                    @if($review->status === 'pending' && auth()->check() && auth()->id() === $review->user_id)
+                                    @php
+                                        $showPendingBadge = auth()->check() && (int) auth()->id() === (int) $review->user_id && $review->status === 'pending';
+                                    @endphp
+                                    @if($showPendingBadge)
                                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 flex items-center gap-1">
                                             <i class="fas fa-clock text-xs"></i>
                                             Menunggu Persetujuan
@@ -100,9 +103,14 @@
                                     <div id="dropdown-{{ $review->id }}" 
                                          class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border hidden">
                                         @auth
-                                            @if(auth()->id() === $review->user_id)
+                                            @php
+                                                $currentUserId = (int) auth()->id();
+                                                $reviewUserId = (int) $review->user_id;
+                                                $isOwner = $currentUserId === $reviewUserId;
+                                            @endphp
+                                            @if($isOwner)
                                                 <button type="button" 
-                                                        onclick="openEditModal({{ $review->id }}, {{ $review->rating }}, '{{ addslashes($review->comment) }}')"
+                                                        onclick="openEditModal({{ $review->id }}, {{ $review->rating }}, '{{ addslashes($review->comment ?? '') }}')"
                                                         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                     <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -148,7 +156,10 @@
                             <div class="flex items-center justify-between mt-2">
                                 <p class="text-sm text-gray-500">{{ $review->created_at->format('M d, Y') }}</p>
                                 <div class="review-status-message">
-                                    @if($review->status === 'pending' && auth()->check() && auth()->id() === $review->user_id)
+                                    @php
+                                        $showPendingMessage = auth()->check() && (int) auth()->id() === (int) $review->user_id && $review->status === 'pending';
+                                    @endphp
+                                    @if($showPendingMessage)
                                         <p class="text-xs text-yellow-600 italic">
                                             <i class="fas fa-info-circle mr-1"></i>
                                             Review Anda sedang menunggu persetujuan admin

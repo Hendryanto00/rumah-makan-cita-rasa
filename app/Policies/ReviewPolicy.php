@@ -23,7 +23,7 @@ class ReviewPolicy
     public function view(User $user, Review $review): bool
     {
         // User bisa melihat review mereka sendiri atau semua review (karena tidak ada status)
-        return $user->id === $review->user_id || true;
+        return (int) $user->id === (int) $review->user_id || true;
     }
 
     /**
@@ -41,7 +41,8 @@ class ReviewPolicy
     public function update(User $user, Review $review): bool
     {
         // User bisa update review mereka sendiri
-        return $user->id === $review->user_id;
+        // Gunakan loose comparison untuk handle type mismatch
+        return (int) $user->id === (int) $review->user_id;
     }
 
     /**
@@ -50,7 +51,7 @@ class ReviewPolicy
     public function delete(User $user, Review $review): bool
     {
         // User bisa hapus review mereka sendiri, admin bisa hapus semua
-        return $user->id === $review->user_id || 
+        return (int) $user->id === (int) $review->user_id || 
                ($user->role && $user->role->name === 'admin');
     }
 

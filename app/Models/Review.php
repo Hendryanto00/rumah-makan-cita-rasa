@@ -34,12 +34,12 @@ class Review extends Model
     // Method untuk check apakah review bisa diedit oleh user
     public function canBeEditedBy(User $user): bool
     {
-        return $this->user_id === $user->id;
+        return (int) $this->user_id === (int) $user->id;
     }
 
     // Method untuk check apakah review bisa dihapus oleh user
     public function canBeDeletedBy(User $user): bool
     {
-        return $this->user_id === $user->id;
+        return (int) $this->user_id === (int) $user->id;
     }
 }
