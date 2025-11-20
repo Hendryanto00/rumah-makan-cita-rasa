@@ -51,11 +51,18 @@
     <style>
         /* Ensure testing instructions are always visible */
         .testing-instructions {
-            position: sticky;
-            top: 20px;
+            position: relative;
+            top: auto;
             z-index: 10;
         }
-        
+
+        @media (min-width: 768px) {
+            .testing-instructions {
+                position: sticky;
+                top: 20px;
+            }
+        }
+
         /* Ensure snap container doesn't overflow */
         #snap-container {
             position: relative;
