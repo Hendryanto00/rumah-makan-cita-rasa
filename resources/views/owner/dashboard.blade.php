@@ -638,19 +638,41 @@
     if (monthlySalesTrendCtx) {
         const monthlySalesTrendData = @json($monthlySalesTrend);
         const monthlyRevenues = monthlySalesTrendData.map(item => item.revenue);
+        const monthlyOrders = monthlySalesTrendData.map(item => item.orders);
         const monthlyMax = Math.max(1, ...monthlyRevenues);
+        const monthlyMaxOrders = Math.max(1, ...monthlyOrders);
         monthlySalesTrendChart = new Chart(monthlySalesTrendCtx, {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels: monthlySalesTrendData.map(item => item.month_short),
                 datasets: [{
                     label: 'Pendapatan (Rp)',
                     data: monthlyRevenues,
-                    backgroundColor: 'rgba(234, 88, 12, 0.8)',
                     borderColor: 'rgba(234, 88, 12, 1)',
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    borderSkipped: false,
+                    backgroundColor: 'rgba(234, 88, 12, 0.15)',
+                    fill: true,
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: 'rgba(234, 88, 12, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 1,
+                    tension: 0.3,
+                    yAxisID: 'y',
+                }, {
+                    label: 'Jumlah Pesanan',
+                    data: monthlyOrders,
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                    fill: true,
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 1,
+                    tension: 0.3,
+                    yAxisID: 'y1',
                 }]
             },
             options: {
@@ -679,6 +701,9 @@
                 },
                 scales: {
                     y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
                         beginAtZero: true,
                         title: {
                             display: true,
@@ -706,6 +731,32 @@
                             color: 'rgba(0, 0, 0, 0.05)'
                         },
                         suggestedMax: monthlyMax * 1.2
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Jumlah Pesanan',
+                            padding: { top: 10, bottom: 10, left: 0, right: isMobile() ? 0 : 5 },
+                            font: {
+                                size: isMobile() ? 10 : 12,
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                        ticks: {
+                            color: 'rgb(59, 130, 246)',
+                            font: {
+                                size: isMobile() ? 9 : 11
+                            },
+                            padding: isMobile() ? 3 : 8
+                        },
+                        suggestedMax: Math.ceil(monthlyMaxOrders * 1.2)
                     },
                     x: {
                         grid: {

@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireframe Hitam Putih - Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #ffffff;
+            padding: 20px;
+            line-height: 1.4;
+            color: #000;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .page-section {
+            margin-bottom: 60px;
+            page-break-after: always;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000;
+        }
+
+        .wf-box {
+            border: 2px solid #000;
+            background: #fff;
+            margin: 10px 0;
+            padding: 20px;
+        }
+
+        .wf-box.header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f5f5f5;
+        }
+
+        .wf-box.grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .wf-grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .wf-grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .wf-grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .wf-grid-5 { grid-template-columns: repeat(5, 1fr); }
+
+        .wf-item {
+            border: 2px solid #000;
+            padding: 15px;
+            text-align: center;
+            background: #fff;
+        }
+
+        .wf-text {
+            border: none;
+            border-bottom: 1px solid #000;
+            padding: 5px 0;
+            margin: 5px 0;
+            min-height: 20px;
+        }
+
+        .wf-text.large {
+            font-size: 18px;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        .wf-text.medium {
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .wf-text.small {
+            font-size: 12px;
+            min-height: 15px;
+        }
+
+        .wf-input {
+            border: 2px solid #000;
+            padding: 8px;
+            background: #fff;
+            margin: 4px 0 10px;
+            min-height: 32px;
+        }
+
+        .wf-textarea {
+            border: 2px solid #000;
+            padding: 10px;
+            background: #fff;
+            margin: 4px 0 10px;
+            min-height: 110px;
+        }
+
+        .wf-button {
+            border: 2px solid #000;
+            padding: 6px 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: #fff;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            margin: 4px;
+            border-radius: 8px;
+            min-width: 80px;
+        }
+
+        .wf-button.filled {
+            background: #000;
+            color: #fff;
+        }
+
+        .wf-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #000;
+            margin-top: 10px;
+        }
+
+        .wf-table th,
+        .wf-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .wf-badge {
+            border: 1px solid #000;
+            padding: 3px 8px;
+            display: inline-block;
+            font-size: 11px;
+            margin-right: 5px;
+        }
+
+        .wf-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid #000;
+            padding: 4px 8px;
+            font-size: 12px;
+            margin: 2px;
+        }
+
+        .toc {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px solid #000;
+        }
+
+        .toc h2 {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .toc ul {
+            list-style: none;
+            columns: 2;
+            column-gap: 20px;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+        }
+
+        .toc a {
+            color: #000;
+            text-decoration: none;
+            border-bottom: 1px solid #000;
+        }
+
+        .wf-modal-wrapper {
+            border: 2px dashed #000;
+            padding: 30px;
+            margin-top: 20px;
+            background: #fdfdfd;
+        }
+
+        .wf-modal {
+            border: 3px solid #000;
+            background: #fff;
+            padding: 25px;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .wf-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+
+        .wf-modal-body {
+            padding: 20px 0;
+        }
+
+        .wf-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .wf-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .wf-sidebar {
+            border: 2px solid #000;
+            background: #f7f7f7;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wf-sidebar-header {
+            padding: 18px;
+            border-bottom: 2px solid #000;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .wf-sidebar-menu {
+            list-style: none;
+            margin: 0;
+        }
+
+        .wf-sidebar-menu li {
+            padding: 12px 18px;
+            border-bottom: 1px solid #000;
+            background: #fff;
+        }
+
+        .wf-sidebar-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .wf-sidebar-menu li.active {
+            background: #d9d9d9;
+            font-weight: bold;
+        }
+
+        .wf-sidebar-footer {
+            padding: 14px 18px;
+            border-top: 2px solid #000;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .wf-main {
+            width: 100%;
+        }
+
+        .wf-modal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .wf-modal-card {
+            border: 2px solid #000;
+            padding: 15px;
+            background: #fff;
+        }
+
+        .wf-sweetalert {
+            border: 2px solid #000;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .wf-sweetalert .wf-icon {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #000;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .wf-sweetalert .wf-button-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WIREFRAME HITAM PUTIH - ADMIN</h1>
+        <div class="subtitle">Halaman Backoffice Rumah Makan Cita Rasa (Low Fidelity)</div>
+
+        <div class="toc">
+            <h2>DAFTAR ISI</h2>
+            <ul>
+                <li><a href="#dashboard">1. Dashboard Admin</a></li>
+                <li><a href="#categories-list">2. Daftar Kategori</a></li>
+                <li><a href="#category-form-add">3. Form Tambah Kategori</a></li>
+                <li><a href="#category-form-edit">4. Form Edit Kategori</a></li>
+                <li><a href="#menus-list">5. Daftar Menu</a></li>
+                <li><a href="#menu-form-add">6. Form Tambah Menu</a></li>
+                <li><a href="#menu-form-edit">7. Form Edit Menu</a></li>
+                <li><a href="#orders-list">8. Daftar Pesanan</a></li>
+                <li><a href="#order-detail">9. Detail Pesanan</a></li>
+                <li><a href="#reviews-list">10. Daftar Review</a></li>
+                <li><a href="#review-detail">11. Detail Review</a></li>
+                <li><a href="#review-statistics">12. Statistik Review</a></li>
+                <li><a href="#admin-profile">13. Profil Admin</a></li>
+                <li><a href="#modal-confirmation">14. Modal Konfirmasi</a></li>
+            </ul>
+        </div>
+
+        <!-- 1. DASHBOARD -->
+        <div class="page-section" id="dashboard">
+            <div class="page-title">1. DASHBOARD ADMIN</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li>Profil</li>
+                        <li class="active">Dashboard</li>
+                        <li>Kelola Menu</li>
+                        <li>Kelola Pesanan</li>
+                        <li>Kelola Kategori</li>
+                        <li>Kelola Review</li>
+                        <li>Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box">
+                        <div class="wf-box header">
+                            <div>
+                                <div class="wf-text small">Halo, Admin</div>
+                                <div class="wf-text large">Ringkasan Operasional</div>
+                                <div class="wf-text small">Kelola menu, kategori, pesanan, dan review di satu tempat.</div>
+                            </div>
+                            <div class="wf-text small" style="text-align:right;">Tanggal hari ini + ikon kalender</div>
+                        </div>
+
+                        <div class="wf-box" style="margin-top:20px;">
+                            <div class="wf-text medium">Aksi Cepat</div>
+                            <div class="wf-box grid wf-grid-3" style="margin-top:10px;">
+                                <div class="wf-item">
+                                    <div class="wf-text small">Profil Saya</div>
+                                    <div class="wf-text small">Tautan ke halaman profil admin</div>
+                                </div>
+                                <div class="wf-item">
+                                    <div class="wf-text small">Kelola Menu</div>
+                                    <div class="wf-text small">Shortcut ke daftar menu</div>
+                                </div>
+                                <div class="wf-item">
+                                    <div class="wf-text small">Tambah Kategori</div>
+                                    <div class="wf-text small">Tombol cepat menuju form</div>
+                                </div>
+                                <div class="wf-item">
+                                    <div class="wf-text small">Kelola Kategori</div>
+                                    <div class="wf-text small">Shortcut</div>
+                                </div>
+                                <div class="wf-item">
+                                    <div class="wf-text small">Kelola Review</div>
+                                    <div class="wf-text small">Daftar review</div>
+                                </div>
+                                <div class="wf-item">
+                                    <div class="wf-text small">Statistik Review</div>
+                                    <div class="wf-text small">Menuju halaman statistik</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="wf-box" style="margin-top:20px;">
+                            <div class="wf-text medium">Status Pesanan</div>
+                            <div class="wf-box grid wf-grid-5" style="margin-top:10px;">
+                                <div class="wf-item"><div class="wf-text large">0</div><div class="wf-text small">Pending</div></div>
+                                <div class="wf-item"><div class="wf-text large">0</div><div class="wf-text small">Sudah Bayar</div></div>
+                                <div class="wf-item"><div class="wf-text large">0</div><div class="wf-text small">Diproses</div></div>
+                                <div class="wf-item"><div class="wf-text large">0</div><div class="wf-text small">Selesai</div></div>
+                                <div class="wf-item"><div class="wf-text large">0</div><div class="wf-text small">Batal</div></div>
+                            </div>
+                        </div>
+
+                        <div class="wf-box grid wf-grid-2" style="margin-top:20px;">
+                            <div class="wf-box">
+                                <div class="wf-text medium">Pesanan Terbaru</div>
+                                <table class="wf-table" style="margin-top:10px;">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Pelanggan</th>
+                                            <th>Total</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>#123</td>
+                                            <td>User A</td>
+                                            <td>Rp xx.xxx</td>
+                                            <td><span class="wf-badge">Menunggu</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" style="text-align:center;">Tabel + versi mobile list</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="wf-button" style="margin-top:10px;">Lihat Semua</div>
+                            </div>
+
+                            <div class="wf-box">
+                                <div class="wf-text medium">Stok Menipis</div>
+                                <table class="wf-table" style="margin-top:10px;">
+                                    <thead>
+                                        <tr><th>Menu</th><th>Stok</th><th>Status</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Nasi Goreng</td><td>2</td><td>Kritis</td></tr>
+                                        <tr><td colspan="3" style="text-align:center;">Tabel + versi mobile list</td></tr>
+                                    </tbody>
+                                </table>
+                                <div class="wf-button" style="margin-top:10px;">Kelola Menu</div>
+                            </div>
+                        </div>
+
+                        <div class="wf-box" style="margin-top:20px;">
+                            <div class="wf-text medium">Menu Terlaris</div>
+                            <div class="wf-box grid wf-grid-4" style="margin-top:10px;">
+                                <div class="wf-item">
+                                    <div class="wf-text small">Menu A</div>
+                                    <div class="wf-text large">120</div>
+                                    <div class="wf-text small">Terjual</div>
+                                </div>
+                                <div class="wf-item"><div class="wf-text small">Menu B</div><div class="wf-text large">87</div></div>
+                                <div class="wf-item"><div class="wf-text small">Menu C</div><div class="wf-text large">65</div></div>
+                                <div class="wf-item"><div class="wf-text small">Menu D</div><div class="wf-text large">48</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. CATEGORY LIST -->
+        <div class="page-section" id="categories-list">
+            <div class="page-title">2. DAFTAR KATEGORI</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li>Profil</li>
+                        <li>Dashboard</li>
+                        <li>Kelola Menu</li>
+                        <li>Kelola Pesanan</li>
+                        <li class="active">Kelola Kategori</li>
+                        <li>Kelola Review</li>
+                        <li>Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box header">
+                        <div>
+                            <div class="wf-text medium">Daftar Kategori</div>
+                            <div class="wf-text small">Kelola pengelompokan menu</div>
+                        </div>
+                        <div class="wf-button filled">+ Tambah Kategori</div>
+                    </div>
+
+                    <div class="wf-box">
+                        <div class="wf-text small">Filter & Pencarian</div>
+                        <div class="wf-box grid wf-grid-3" style="margin-top:10px;">
+                            <div>
+                                <div class="wf-text small">Pencarian</div>
+                                <div class="wf-input"></div>
+                            </div>
+                            <div>
+                                <div class="wf-text small">Tombol Cari</div>
+                                <div class="wf-button">Cari</div>
+                            </div>
+                            <div>
+                                <div class="wf-text small">Filter: Semua / Dengan Menu / Tanpa Menu</div>
+                                <div class="wf-input"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wf-box">
+                        <div class="wf-text small">Tabel Desktop</div>
+                        <table class="wf-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Deskripsi</th>
+                                    <th>Jumlah Menu</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Makanan Utama</td>
+                                    <td>Deskripsi singkat</td>
+                                    <td><span class="wf-badge">5 menu</span></td>
+                                    <td>
+                                        <div class="wf-button">Edit</div>
+                                        <div class="wf-button filled">Hapus</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="text-align:center;">Empty state + tombol tambah kategori</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="wf-text small" style="margin-top:10px;">Mobile menggunakan kartu vertikal + badge jumlah menu + tombol Edit/Hapus.</div>
+                        <div class="wf-text small" style="margin-top:5px;">Aksi hapus memakai modal tipe B (SweetAlert Hapus).</div>
+                    </div>
+
+                    <div class="wf-text small" style="margin-top:10px;">Pagination standar berada di bawah tabel.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. CATEGORY FORM ADD -->
+        <div class="page-section" id="category-form-add">
+            <div class="page-title">3. FORM TAMBAH KATEGORI</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li>Profil</li>
+                        <li>Dashboard</li>
+                        <li>Kelola Menu</li>
+                        <li>Kelola Pesanan</li>
+                        <li class="active">Kelola Kategori</li>
+                        <li>Kelola Review</li>
+                        <li>Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box">
+                        <div class="wf-text medium">Tambah Kategori Baru</div>
+                        <div class="wf-box" style="margin-top:10px;">
+                            <div class="wf-text small">Nama Kategori*</div>
+                            <div class="wf-input"></div>
+                            <div class="wf-text small" style="margin-top:10px;">Deskripsi (opsional)</div>
+                            <div class="wf-textarea" style="min-height:120px;"></div>
+                            <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end;">
+                                <div class="wf-button">Batal</div>
+                                <div class="wf-button filled">Simpan</div>
+                            </div>
+                        </div>
+                        <div class="wf-text small" style="margin-top:10px;">Validasi error ditampilkan di bawah field.</div>
+                        <div class="wf-text small" style="margin-top:10px;">Setelah klik Simpan, tampilkan modal tipe C untuk konfirmasi.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. CATEGORY FORM EDIT -->
+        <div class="page-section" id="category-form-edit">
+            <div class="page-title">4. FORM EDIT KATEGORI</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li>Profil</li>
+                        <li>Dashboard</li>
+                        <li>Kelola Menu</li>
+                        <li>Kelola Pesanan</li>
+                        <li class="active">Kelola Kategori</li>
+                        <li>Kelola Review</li>
+                        <li>Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box">
+                        <div class="wf-text medium">Edit Kategori & Pindah Menu</div>
+                        <div class="wf-box" style="margin-top:10px;">
+                            <div class="wf-text small">Nama Kategori*</div>
+                            <div class="wf-input"></div>
+                            <div class="wf-text small" style="margin-top:10px;">Deskripsi (opsional)</div>
+                            <div class="wf-textarea" style="min-height:120px;"></div>
+                        </div>
+                        <div class="wf-box" style="margin-top:15px; border-left:4px solid #000; background:#f9f9f9;">
+                            <div class="wf-text small"><strong>Peringatan:</strong> Kategori memiliki daftar menu aktif.</div>
+                            <div class="wf-text small" style="margin-top:10px;">Daftar menu dengan checkbox + tombol "Pilih Semua" / "Batal Pilih".</div>
+                            <div class="wf-box" style="margin-top:10px; height:120px;">[list menu + harga + checkbox]</div>
+                            <div class="wf-text small" style="margin-top:10px;">Dropdown tujuan “Pindahkan ke kategori ...”</div>
+                            <div class="wf-input"></div>
+                            <div class="wf-text small">Jika tidak memilih menu, data tetap di kategori ini.</div>
+                        </div>
+                        <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end;">
+                            <div class="wf-button">Batal</div>
+                            <div class="wf-button filled">Simpan Perubahan</div>
+                        </div>
+                        <div class="wf-text small" style="margin-top:10px;">Konfirmasi penyimpanan menggunakan modal tipe C.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. MENU LIST -->
+        <div class="page-section" id="menus-list">
+            <div class="page-title">5. DAFTAR MENU</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li>Profil</li>
+                        <li>Dashboard</li>
+                        <li class="active">Kelola Menu</li>
+                        <li>Kelola Pesanan</li>
+                        <li>Kelola Kategori</li>
+                        <li>Kelola Review</li>
+                        <li>Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box header">
+                        <div>
+                            <div class="wf-text medium">Menu</div>
+                            <div class="wf-text small">Kelola katalog</div>
+                        </div>
+                        <div class="wf-button filled">+ Tambah Menu</div>
+                    </div>
+
+                    <div class="wf-box">
+                        <div class="wf-text small">Filter & Pencarian</div>
+                        <div class="wf-box grid wf-grid-4" style="margin-top:10px;">
+                            <div>
+                                <div class="wf-text small">Pencarian</div>
+                                <div class="wf-input"></div>
+                            </div>
+                            <div>
+                                <div class="wf-text small">Button Cari</div>
+                                <div class="wf-button">Cari</div>
+                            </div>
+                            <div>
+                                <div class="wf-text small">Dropdown Kategori</div>
+                                <div class="wf-input"></div>
+                            </div>
+                            <div>
+                                <div class="wf-text small">Dropdown Status (Aktif/Nonaktif)</div>
+                                <div class="wf-input"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wf-box">
+                        <div class="wf-text small">Tabel Desktop (kolom gambar, nama, kategori, harga, stok, status, aksi)</div>
+                        <table class="wf-table" style="margin-top:10px;">
+                            <thead>
+                                <tr>
+                                    <th>Gambar</th>
+                                    <th>Nama</th>
+                                    <th>Kategori</th>
+                                    <th>Harga</th>
+                                    <th>Stok</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>[img]</td>
+                                    <td>Nasi Goreng</td>
+                                    <td>Makanan Utama</td>
+                                    <td>Rp 25.000</td>
+                                    <td>12</td>
+                                    <td><span class="wf-badge">Aktif</span></td>
+                                    <td>
+                                        <div class="wf-button">Edit</div>
+                                        <div class="wf-button filled">Hapus</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7" style="text-align:center;">Empty state saat tabel kosong</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="wf-text small" style="margin-top:10px;">Mobile menggunakan kartu dengan gambar, detail menu, badge status, dan tombol Edit/Hapus.</div>
+                        <div class="wf-text small" style="margin-top:5px;">Hapus menu memakai modal tipe B; tombol simpan pada form menggunakan modal tipe C.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. MENU FORM ADD -->
+        <div class="page-section" id="menu-form-add">
+            <div class="page-title">6. FORM TAMBAH MENU</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li>Profil</li>
+                        <li>Dashboard</li>
+                        <li class="active">Kelola Menu</li>
+                        <li>Kelola Pesanan</li>
+                        <li>Kelola Kategori</li>
+                        <li>Kelola Review</li>
+                        <li>Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box">
+                        <div class="wf-text medium">Tambah Menu Baru</div>
+                        <div class="wf-box grid wf-grid-2" style="margin-top:10px;">
+                            <div>
+                                <div class="wf-text small">Nama*</div>
+                                <div class="wf-input"></div>
+                                <div class="wf-text small" style="margin-top:10px;">Kategori*</div>
+                                <div class="wf-input"></div>
+                                <div class="wf-text small" style="margin-top:10px;">Harga*</div>
+                                <div class="wf-input"></div>
+                                <div class="wf-text small" style="margin-top:10px;">Stok*</div>
+                                <div class="wf-input"></div>
+                            </div>
+                            <div>
+                                <div class="wf-text small">Deskripsi</div>
+                                <div class="wf-textarea" style="min-height:120px;"></div>
+                                <div class="wf-text small" style="margin-top:10px;">Pratinjau Gambar</div>
+                                <div class="wf-box" style="height:100px; text-align:center;">[Preview]</div>
+                                <div class="wf-text small" style="margin-top:10px;">Upload Foto</div>
+                                <div class="wf-input"></div>
+                                <div class="wf-text small" style="margin-top:10px;">Checkbox Aktif</div>
+                                <div class="wf-badge">Aktifkan menu</div>
+                            </div>
+                        </div>
+                        <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end;">
+                            <div class="wf-button">Batal</div>
+                            <div class="wf-button filled">Simpan</div>
+                        </div>
+                        <div class="wf-text small" style="margin-top:10px;">Setelah klik Simpan, tampilkan modal tipe C untuk konfirmasi.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. MENU FORM EDIT -->
+        <div class="page-section" id="menu-form-edit">
+            <div class="page-title">7. FORM EDIT MENU</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li>Profil</li>
+                        <li>Dashboard</li>
+                        <li class="active">Kelola Menu</li>
+                        <li>Kelola Pesanan</li>
+                        <li>Kelola Kategori</li>
+                        <li>Kelola Review</li>
+                        <li>Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box">
+                        <div class="wf-text medium">Edit Menu dengan Pratinjau</div>
+                        <div class="wf-box grid wf-grid-2" style="margin-top:10px;">
+                            <div>
+                                <div class="wf-text small">Nama*</div>
+                                <div class="wf-input"></div>
+                                <div class="wf-text small" style="margin-top:10px;">Kategori*</div>
+                                <div class="wf-input"></div>
+                                <div class="wf-text small" style="margin-top:10px;">Harga*</div>
+                                <div class="wf-input"></div>
+                                <div class="wf-text small" style="margin-top:10px;">Stok*</div>
+                                <div class="wf-input"></div>
+                                <div class="wf-text small" style="margin-top:10px;">Deskripsi</div>
+                                <div class="wf-textarea"></div>
+                            </div>
+                            <div>
+                                <div class="wf-text small">Gambar Saat Ini</div>
+                                <div class="wf-box" style="height:110px; text-align:center;">[Preview Image]</div>
+                                <div class="wf-text small" style="margin-top:10px;">Upload gambar baru (opsional)</div>
+                                <div class="wf-input"></div>
+                                <div class="wf-text small" style="margin-top:10px;">Checkbox Aktif</div>
+                                <div class="wf-badge">☑ Aktifkan menu</div>
+                            </div>
+                        </div>
+                        <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end;">
+                            <div class="wf-button">Batal</div>
+                            <div class="wf-button filled">Simpan Perubahan</div>
+                        </div>
+                        <div class="wf-text small" style="margin-top:10px;">Konfirmasi penyimpanan menggunakan modal tipe C.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. ORDERS LIST -->
+        <div class="page-section" id="orders-list">
+            <div class="page-title">8. DAFTAR PESANAN</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li>Profil</li>
+                        <li>Dashboard</li>
+                        <li>Kelola Menu</li>
+                        <li class="active">Kelola Pesanan</li>
+                        <li>Kelola Kategori</li>
+                        <li>Kelola Review</li>
+                        <li>Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box header">
+                        <div>
+                            <div class="wf-text medium">Daftar Pesanan</div>
+                            <div class="wf-text small">Pantau dan ubah status</div>
+                        </div>
+                    </div>
+
+                    <div class="wf-box">
+                        <div class="wf-text small">Filter</div>
+                        <div class="wf-box grid wf-grid-3" style="margin-top:10px;">
+                            <div>
+                                <div class="wf-text small">Pencarian ID / Nama / Email</div>
+                                <div class="wf-input"></div>
+                            </div>
+                            <div>
+                                <div class="wf-text small">Status (Semua / specific)</div>
+                                <div class="wf-input"></div>
+                            </div>
+                            <div style="display:flex; align-items:flex-end;">
+                                <div class="wf-button">Cari</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wf-box">
+                        <table class="wf-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Pelanggan</th>
+                                    <th>Tanggal</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#120</td>
+                                    <td>User X</td>
+                                    <td>12/10/2025</td>
+                                    <td>Rp xx.xxx</td>
+                                    <td><span class="wf-badge">Menunggu</span></td>
+                                    <td><div class="wf-button">Detail</div></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6" style="text-align:center;">Empty state + ikon keranjang</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="wf-text small" style="margin-top:10px;">Mobile memakai kartu: ID + badge status + tombol lihat.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9. ORDER DETAIL -->
+        <div class="page-section" id="order-detail">
+            <div class="page-title">9. DETAIL PESANAN</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li>Profil</li>
+                        <li>Dashboard</li>
+                        <li>Kelola Menu</li>
+                        <li class="active">Kelola Pesanan</li>
+                        <li>Kelola Kategori</li>
+                        <li>Kelola Review</li>
+                        <li>Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box">
+                        <div class="wf-box header">
+                            <div>
+                                <div class="wf-text medium">Pesanan #123</div>
+                                <div class="wf-text small">Tanggal & waktu</div>
+                            </div>
+                            <div class="wf-badge">Status saat ini</div>
+                        </div>
+
+                        <div class="wf-box" style="margin-top:20px;">
+                            <div class="wf-text medium">Timeline Status</div>
+                            <div class="wf-text small">Menunggu → Sudah Bayar → Diproses → Selesai (+ badge Dibatalkan jika perlu)</div>
+                        </div>
+
+                        <div class="wf-box grid wf-grid-2" style="margin-top:20px;">
+                            <div class="wf-box">
+                                <div class="wf-text medium">Informasi Pelanggan</div>
+                                <div class="wf-text small">Nama, email, ringkasan order</div>
+                            </div>
+                            <div class="wf-box">
+                                <div class="wf-text medium">Ringkasan Total</div>
+                                <div class="wf-text small">Subtotal dan Total</div>
+                            </div>
+                        </div>
+
+                        <div class="wf-box" style="margin-top:20px;">
+                            <div class="wf-text medium">Item Pesanan</div>
+                            <table class="wf-table" style="margin-top:10px;">
+                                <thead>
+                                    <tr><th>Menu</th><th>Qty</th><th>Catatan</th><th>Subtotal</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Menu A</td><td>2</td><td>-</td><td>Rp xx.xxx</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="wf-box grid wf-grid-2" style="margin-top:20px;">
+                            <div class="wf-box">
+                                <div class="wf-text medium">Informasi Pembayaran</div>
+                                <div class="wf-text small">Metode, ID transaksi, status pembayaran</div>
+                            </div>
+                            <div class="wf-box">
+                                <div class="wf-text medium">Update Status</div>
+                                <div class="wf-input" style="margin-top:10px;">Dropdown status</div>
+                                <div class="wf-button filled" style="margin-top:10px;">Simpan</div>
+                                <div class="wf-button" style="margin-top:10px;">Download Nota PDF</div>
+                            </div>
+                        </div>
+                        <div class="wf-text small" style="margin-top:10px;">Saat menyimpan status, tampilkan modal tipe C.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10. REVIEWS LIST -->
+        <div class="page-section" id="reviews-list">
+            <div class="page-title">10. DAFTAR REVIEW</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li>Profil</li>
+                        <li>Dashboard</li>
+                        <li>Kelola Menu</li>
+                        <li>Kelola Pesanan</li>
+                        <li>Kelola Kategori</li>
+                        <li class="active">Kelola Review</li>
+                        <li>Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box header">
+                        <div>
+                            <div class="wf-text medium">Kelola Review</div>
+                            <div class="wf-text small">Pastikan kualitas ulasan</div>
+                        </div>
+                    </div>
+
+                    <div class="wf-box">
+                        <div class="wf-text medium">Ringkasan</div>
+                        <div class="wf-box grid wf-grid-4" style="margin-top:10px;">
+                            <div class="wf-item"><div class="wf-text large">0</div><div class="wf-text small">Total</div></div>
+                            <div class="wf-item"><div class="wf-text large">0</div><div class="wf-text small">Menunggu</div></div>
+                            <div class="wf-item"><div class="wf-text large">0</div><div class="wf-text small">Disetujui</div></div>
+                            <div class="wf-item"><div class="wf-text large">0</div><div class="wf-text small">Disembunyikan</div></div>
+                        </div>
+                    </div>
+
+                    <div class="wf-box">
+                        <div class="wf-text small">Filter + Aksi Massal</div>
+                        <div class="wf-box grid wf-grid-3" style="margin-top:10px;">
+                            <div>
+                                <div class="wf-text small">Pencarian</div>
+                                <div class="wf-input"></div>
+                            </div>
+                            <div>
+                                <div class="wf-text small">Filter status</div>
+                                <div class="wf-input"></div>
+                            </div>
+                            <div>
+                                <div class="wf-text small">Dropdown Aksi Massal</div>
+                                <div class="wf-input"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wf-box">
+                        <table class="wf-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox"></th>
+                                    <th>Pelanggan</th>
+                                    <th>Menu</th>
+                                    <th>Rating</th>
+                                    <th>Komentar</th>
+                                    <th>Status</th>
+                                    <th>Tanggal</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox"></td>
+                                    <td>User X</td>
+                                    <td>Menu A</td>
+                                    <td>⭐⭐⭐⭐☆</td>
+                                    <td>Ringkasan komentar</td>
+                                    <td><span class="wf-badge">Menunggu</span></td>
+                                    <td>12/10</td>
+                                    <td>
+                                        <div class="wf-button">Lihat</div>
+                                        <div class="wf-button">Setujui</div>
+                                        <div class="wf-button">Sembunyikan</div>
+                                        <div class="wf-button filled">Tolak</div>
+                                    </td>
+                                </tr>
+                                <tr><td colspan="8" style="text-align:center;">Empty state ikon bintang</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="wf-text small" style="margin-top:10px;">Mobile menggunakan card dengan checkbox, detail review, dan action buttons.</div>
+                        <div class="wf-text small" style="margin-top:5px;">Setujui/Sembunyikan memakai modal tipe C untuk konfirmasi, sedangkan Tolak memakai modal tipe B.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 11. REVIEW DETAIL -->
+        <div class="page-section" id="review-detail">
+            <div class="page-title">11. DETAIL REVIEW</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li>Profil</li>
+                        <li>Dashboard</li>
+                        <li>Kelola Menu</li>
+                        <li>Kelola Pesanan</li>
+                        <li>Kelola Kategori</li>
+                        <li class="active">Kelola Review</li>
+                        <li>Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box">
+                        <div class="wf-box grid wf-grid-2">
+                            <div class="wf-box">
+                                <div class="wf-text medium">Informasi Review</div>
+                                <div class="wf-text small">Rating bintang, status, tanggal, komentar</div>
+                            </div>
+                            <div class="wf-box">
+                                <div class="wf-text medium">Informasi Pengguna</div>
+                                <div class="wf-text small">Nama, email, total review</div>
+                            </div>
+                        </div>
+
+                        <div class="wf-box" style="margin-top:20px;">
+                            <div class="wf-text medium">Informasi Menu</div>
+                            <div class="wf-text small">Nama menu, kategori, harga, status, deskripsi</div>
+                        </div>
+
+                        <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
+                            <div class="wf-button">Kembali</div>
+                            <div class="wf-button">Setujui</div>
+                            <div class="wf-button">Sembunyikan / Tampilkan</div>
+                            <div class="wf-button filled">Tolak</div>
+                        </div>
+                        <div class="wf-text small" style="margin-top:10px;">Setujui/Sembunyikan memakai modal tipe C untuk konfirmasi, sedangkan Tolak memakai modal tipe B.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 12. REVIEW STATISTICS -->
+        <div class="page-section" id="review-statistics">
+            <div class="page-title">12. STATISTIK REVIEW</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li>Profil</li>
+                        <li>Dashboard</li>
+                        <li>Kelola Menu</li>
+                        <li>Kelola Pesanan</li>
+                        <li>Kelola Kategori</li>
+                        <li>Kelola Review</li>
+                        <li class="active">Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box">
+                        <div class="wf-text medium">Kartu Ringkasan</div>
+                        <div class="wf-box grid wf-grid-4" style="margin-top:10px;">
+                            <div class="wf-item"><div class="wf-text small">Total Review</div><div class="wf-text large">0</div></div>
+                            <div class="wf-item"><div class="wf-text small">Review Disetujui</div><div class="wf-text large">0</div></div>
+                            <div class="wf-item"><div class="wf-text small">Rata-rata Rating</div><div class="wf-text large">0.00/5</div></div>
+                            <div class="wf-item"><div class="wf-text small">Menunggu</div><div class="wf-text large">0</div></div>
+                        </div>
+
+                        <div class="wf-box" style="margin-top:20px;">
+                            <div class="wf-text medium">Distribusi Bintang</div>
+                            <div class="wf-text small">Bar horizontal dari 5 bintang sampai 1 bintang</div>
+                        </div>
+
+                        <div class="wf-box grid wf-grid-2" style="margin-top:20px;">
+                            <div class="wf-box">
+                                <div class="wf-text medium">Tren Penilaian (6 Bulan)</div>
+                                <div class="wf-text small">Daftar bulan + rata-rata + jumlah review</div>
+                            </div>
+                            <div class="wf-box">
+                                <div class="wf-text medium">Menu Terpopuler</div>
+                                <div class="wf-text small">Ranking menu + jumlah review</div>
+                            </div>
+                        </div>
+
+                        <div class="wf-box" style="margin-top:20px;">
+                            <div class="wf-text medium">Review Berdasarkan Status</div>
+                            <div class="wf-box grid wf-grid-3" style="margin-top:10px;">
+                                <div class="wf-item"><div class="wf-text small">Disetujui</div><div class="wf-text large">0</div></div>
+                                <div class="wf-item"><div class="wf-text small">Menunggu</div><div class="wf-text large">0</div></div>
+                                <div class="wf-item"><div class="wf-text small">Disembunyikan</div><div class="wf-text large">0</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 13. ADMIN PROFILE -->
+        <div class="page-section" id="admin-profile">
+            <div class="page-title">13. PROFIL ADMIN</div>
+
+            <div class="wf-layout">
+                <div class="wf-sidebar">
+                    <div class="wf-sidebar-header">Menu Admin</div>
+                    <ul class="wf-sidebar-menu">
+                        <li class="active">Profil</li>
+                        <li>Dashboard</li>
+                        <li>Kelola Menu</li>
+                        <li>Kelola Pesanan</li>
+                        <li>Kelola Kategori</li>
+                        <li>Kelola Review</li>
+                        <li>Statistik Review</li>
+                    </ul>
+                    <div class="wf-sidebar-footer">Logout</div>
+                </div>
+
+                <div class="wf-main">
+                    <div class="wf-box">
+                        <div class="wf-box">
+                            <div class="wf-text medium">Informasi Profil</div>
+                            <div class="wf-text small">Field: Nama, Email, Telepon, Alamat</div>
+                            <div class="wf-input"></div>
+                            <div class="wf-input"></div>
+                            <div class="wf-input"></div>
+                            <div class="wf-textarea" style="min-height:80px;"></div>
+                            <div class="wf-button filled" style="margin-top:10px;">Simpan</div>
+                            <div class="wf-text small">Konfirmasi SweetAlert saat submit</div>
+                        </div>
+
+                        <div class="wf-box" style="margin-top:20px;">
+                            <div class="wf-text medium">Ubah Kata Sandi</div>
+                            <div class="wf-text small">Field: Password Lama, Password Baru, Konfirmasi</div>
+                            <div class="wf-input"></div>
+                            <div class="wf-input"></div>
+                            <div class="wf-input"></div>
+                            <div class="wf-button filled" style="margin-top:10px;">Ubah Password</div>
+                            <div class="wf-text small">Terdapat tombol ikon mata untuk toggle</div>
+                        </div>
+
+                        <div class="wf-text small" style="margin-top:20px;">
+                            Konfirmasi hapus akun menggunakan pola modal terpisah pada bagian
+                            <strong>Modal Konfirmasi</strong>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 14. MODAL -->
+        <div class="page-section" id="modal-confirmation">
+            <div class="page-title">14. POLA MODAL</div>
+
+            <div class="wf-text small">Gunakan referensi modal berikut sesuai tindakan yang ada di halaman admin.</div>
+
+            <div class="wf-modal-grid">
+                <div class="wf-modal-card">
+                    <div class="wf-text medium">A. Konfirmasi Hapus Data (Kode)</div>
+                    <div class="wf-modal" style="margin-top:10px;">
+                        <div class="wf-modal-header">
+                            <div class="wf-text small">KONFIRMASI HAPUS DATA</div>
+                            <div class="wf-button" style="padding:4px 12px;">X</div>
+                        </div>
+                        <div class="wf-modal-body">
+                            <div class="wf-text small"><strong>PERINGATAN!</strong> Setelah data dihapus, semua sumber daya terkait akan hilang permanen.</div>
+                            <div class="wf-text small" style="margin-top:15px;">Masukkan kode <strong>HAPUS</strong> untuk melanjutkan:</div>
+                            <div class="wf-input" style="margin-top:10px;"></div>
+                        </div>
+                        <div class="wf-modal-footer">
+                            <div class="wf-button">Batal</div>
+                            <div class="wf-button filled">Hapus</div>
+                        </div>
+                    </div>
+                    <div class="wf-text small" style="margin-top:10px;">Dipakai untuk hapus akun admin atau aksi serupa yang butuh kode.</div>
+                </div>
+
+                <div class="wf-modal-card">
+                    <div class="wf-text medium">B. SweetAlert Hapus</div>
+                        <div class="wf-sweetalert" style="margin-top:10px;">
+                        <div class="wf-icon">!</div>
+                        <div class="wf-text medium">Hapus menu ini?</div>
+                        <div class="wf-text small">Tindakan ini tidak dapat dibatalkan.</div>
+                        <div class="wf-button-row">
+                                <div class="wf-button filled">Ya, hapus</div>
+                            <div class="wf-button">Batal</div>
+                        </div>
+                    </div>
+                    <div class="wf-text small" style="margin-top:10px;">Dipakai pada daftar kategori, daftar menu, daftar review, dan halaman lain yang menghapus data.</div>
+                </div>
+
+                <div class="wf-modal-card">
+                    <div class="wf-text medium">C. SweetAlert Simpan</div>
+                        <div class="wf-sweetalert" style="margin-top:10px;">
+                        <div class="wf-icon">?</div>
+                        <div class="wf-text medium">Simpan perubahan menu?</div>
+                        <div class="wf-text small">Tampilkan sebelum menyimpan form penting.</div>
+                        <div class="wf-button-row">
+                                <div class="wf-button filled">Ya, simpan</div>
+                            <div class="wf-button">Batal</div>
+                        </div>
+                    </div>
+                    <div class="wf-text small" style="margin-top:10px;">Dipakai pada form kategori/menu, profil admin, dan update status pesanan.</div>
+                </div>
+
+                <div class="wf-modal-card">
+                    <div class="wf-text medium">D. SweetAlert Hapus (Sederhana)</div>
+                        <div class="wf-sweetalert" style="margin-top:10px;">
+                        <div class="wf-icon">!</div>
+                        <div class="wf-text medium">Yakin ingin menghapus?</div>
+                        <div class="wf-button-row">
+                                <div class="wf-button filled">Ya, hapus</div>
+                            <div class="wf-button">Batal</div>
+                        </div>
+                    </div>
+                    <div class="wf-text small" style="margin-top:10px;">Dipakai untuk konfirmasi hapus dengan teks yang lebih sederhana tanpa pesan tambahan.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

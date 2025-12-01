@@ -157,7 +157,12 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView('owner.reports.pdf.daily', compact(
             'selectedDate','date','totalOrders','totalRevenue','totalCustomers','popularMenus','orders','averageOrderValue'
-        ))->setPaper('a4', 'portrait');
+        ))->setPaper('a4', 'portrait')
+        ->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'Arial'
+        ]);
 
         $filename = 'laporan-harian-' . $date->format('Y-m-d') . '.pdf';
         return $pdf->download($filename);
@@ -366,7 +371,12 @@ class ReportController extends Controller
         $pdf = Pdf::loadView('owner.reports.pdf.monthly', compact(
             'selectedMonth','month','monthStart','monthEnd','totalOrders','totalRevenue',
             'totalCustomers','topMenus','dailySummary','averageOrderValue','revenueGrowth','prevMonthRevenue'
-        ))->setPaper('a4', 'portrait');
+        ))->setPaper('a4', 'portrait')
+        ->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'Arial'
+        ]);
 
         $filename = 'laporan-bulanan-' . $month->format('Y-m') . '.pdf';
         return $pdf->download($filename);
@@ -537,7 +547,12 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView('owner.reports.pdf.top-menus', compact(
             'startDate','endDate','start','end','topMenusByQuantity','topMenusByRevenue','totalRevenue'
-        ))->setPaper('a4', 'portrait');
+        ))->setPaper('a4', 'portrait')
+        ->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'Arial'
+        ]);
 
         $filename = 'laporan-menu-terlaris-' . $start->format('Ymd') . '-' . $end->format('Ymd') . '.pdf';
         return $pdf->download($filename);

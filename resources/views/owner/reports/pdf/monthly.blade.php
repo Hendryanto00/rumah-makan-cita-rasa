@@ -5,8 +5,13 @@
     <title>Laporan Bulanan Penjualan</title>
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #111827; }
-        h1 { font-size: 18px; margin: 0 0 8px; }
-        .muted { color: #6b7280; }
+        .header { border-bottom: 3px solid #f97316; padding-bottom: 15px; margin-bottom: 20px; }
+        .header-top { text-align: center; }
+        .restaurant-name { font-size: 24px; font-weight: bold; color: #f97316; margin-bottom: 5px; }
+        .restaurant-subtitle { font-size: 11px; color: #666; margin-bottom: 5px; }
+        .restaurant-address { font-size: 9px; color: #666; }
+        h1 { font-size: 18px; margin: 15px 0 8px; text-align: center; color: #f97316; }
+        .muted { color: #6b7280; text-align: center; margin-bottom: 16px; }
         .section { margin-top: 16px; }
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #e5e7eb; padding: 6px 8px; text-align: left; }
@@ -15,6 +20,16 @@
     </style>
     </head>
 <body>
+    <div class="header">
+        <div class="header-top">
+            <div class="restaurant-name">Rumah Makan Cita Rasa</div>
+            <div class="restaurant-subtitle">Sistem Pemesanan Makanan Online</div>
+            <div class="restaurant-address">
+                Jl. Kom Yos Sudarso No.04, Putussibau Kota, Kec. Putussibau Utara<br>
+                Kab. Kapuas Hulu, Kalimantan Barat 78711
+            </div>
+        </div>
+    </div>
     <h1>Laporan Bulanan Penjualan</h1>
     <div class="muted">Periode: {{ $monthStart->format('d M Y') }} - {{ $monthEnd->format('d M Y') }}</div>
 
