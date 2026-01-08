@@ -81,11 +81,51 @@
                                         <h3 class="text-base sm:text-lg font-semibold text-gray-900 text-center sm:text-left">{{ $item->menu->name }}</h3>
                                         <p class="text-sm text-gray-500 text-center sm:text-left">{{ $item->menu->category->name }}</p>
                                         <p class="text-sm text-gray-600 mt-1 text-center sm:text-left">{{ Str::limit($item->menu->description, 80) }}</p>
-                                        @if($item->notes)
-                                        <div class="mt-2 text-xs text-blue-600 italic text-center sm:text-left">
-                                            <i class="fas fa-sticky-note mr-1"></i>{{ $item->notes }}
+                                        
+                                        <!-- Notes Display/Edit Section -->
+                                        <div class="mt-2 notes-section" data-item-id="{{ $item->id }}">
+                                            <!-- Notes Display -->
+                                            <div class="notes-display">
+                                                @if($item->notes)
+                                                <div class="flex items-start gap-2 text-xs text-blue-600 italic text-center sm:text-left">
+                                                    <i class="fas fa-sticky-note mr-1 mt-0.5"></i>
+                                                    <span class="flex-1">{{ $item->notes }}</span>
+                                                    <button class="edit-notes-btn text-orange-500 hover:text-orange-700 ml-2" 
+                                                            data-item-id="{{ $item->id }}"
+                                                            title="Edit catatan">
+                                                        <i class="fas fa-edit text-xs"></i>
+                                                    </button>
+                                                </div>
+                                                @else
+                                                <button class="edit-notes-btn text-xs text-gray-500 hover:text-orange-600 text-center sm:text-left" 
+                                                        data-item-id="{{ $item->id }}">
+                                                    <i class="fas fa-plus-circle mr-1"></i>Tambah Catatan
+                                                </button>
+                                                @endif
+                                            </div>
+                                            
+                                            <!-- Notes Edit Form -->
+                                            <div class="notes-edit-form hidden mt-2">
+                                                <div class="flex flex-col sm:flex-row gap-2">
+                                                    <input type="text" 
+                                                           class="notes-input flex-1 px-3 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
+                                                           placeholder="Masukkan catatan (contoh: tidak pedas, extra sambal, dll)"
+                                                           value="{{ $item->notes }}"
+                                                           data-item-id="{{ $item->id }}"
+                                                           maxlength="255">
+                                                    <div class="flex gap-2">
+                                                        <button class="save-notes-btn px-3 py-1.5 text-xs bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
+                                                                data-item-id="{{ $item->id }}">
+                                                            <i class="fas fa-check mr-1"></i>Simpan
+                                                        </button>
+                                                        <button class="cancel-notes-btn px-3 py-1.5 text-xs bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+                                                                data-item-id="{{ $item->id }}">
+                                                            <i class="fas fa-times mr-1"></i>Batal
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        @endif
                                     </div>
                                     
                                     <!-- Controls and Price Container -->
@@ -199,7 +239,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     // If quantity becomes 0 or less, remove the item
                     removeCartItem(itemId);
                 } else {
-                    updateCartItem(itemId, newQuantity);
+                    // Get current notes from the item
+                    const notesSection = document.querySelector(`.notes-section[data-item-id="${itemId}"]`);
+                    let currentNotes = '';
+                    if (notesSection) {
+                        // Check if edit form is visible (use input value)
+                        const editForm = notesSection.querySelector('.notes-edit-form');
+                        if (editForm && !editForm.classList.contains('hidden')) {
+                            const notesInput = notesSection.querySelector('.notes-input');
+                            currentNotes = notesInput ? notesInput.value.trim() : '';
+                        } else {
+                            // Use displayed notes
+                            const notesSpan = notesSection.querySelector('.notes-display span');
+                            currentNotes = notesSpan ? notesSpan.textContent.trim() : '';
+                        }
+                    }
+                    updateCartItem(itemId, newQuantity, currentNotes);
                 }
             }
         });
@@ -213,14 +268,106 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    function updateCartItem(itemId, quantity) {
+    // Edit notes button
+    document.querySelectorAll('.edit-notes-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.dataset.itemId;
+            showNotesEditForm(itemId);
+        });
+    });
+    
+    // Save notes button
+    document.querySelectorAll('.save-notes-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.dataset.itemId;
+            saveNotes(itemId);
+        });
+    });
+    
+    // Cancel notes button
+    document.querySelectorAll('.cancel-notes-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.dataset.itemId;
+            cancelNotesEdit(itemId);
+        });
+    });
+    
+    // Handle Enter key on notes input
+    document.querySelectorAll('.notes-input').forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const itemId = this.dataset.itemId;
+                saveNotes(itemId);
+            }
+        });
+    });
+    
+    function showNotesEditForm(itemId) {
+        const notesSection = document.querySelector(`.notes-section[data-item-id="${itemId}"]`);
+        if (notesSection) {
+            const displayDiv = notesSection.querySelector('.notes-display');
+            const editForm = notesSection.querySelector('.notes-edit-form');
+            const notesInput = notesSection.querySelector('.notes-input');
+            
+            if (displayDiv && editForm) {
+                displayDiv.classList.add('hidden');
+                editForm.classList.remove('hidden');
+                // Focus on input
+                if (notesInput) {
+                    setTimeout(() => notesInput.focus(), 100);
+                }
+            }
+        }
+    }
+    
+    function cancelNotesEdit(itemId) {
+        const notesSection = document.querySelector(`.notes-section[data-item-id="${itemId}"]`);
+        if (notesSection) {
+            const displayDiv = notesSection.querySelector('.notes-display');
+            const editForm = notesSection.querySelector('.notes-edit-form');
+            const notesInput = notesSection.querySelector('.notes-input');
+            
+            if (displayDiv && editForm) {
+                // Reset input to original value
+                let originalNotes = '';
+                const notesSpan = displayDiv.querySelector('span');
+                if (notesSpan) {
+                    originalNotes = notesSpan.textContent.trim();
+                }
+                if (notesInput) {
+                    notesInput.value = originalNotes;
+                }
+                
+                displayDiv.classList.remove('hidden');
+                editForm.classList.add('hidden');
+            }
+        }
+    }
+    
+    function saveNotes(itemId) {
+        const notesSection = document.querySelector(`.notes-section[data-item-id="${itemId}"]`);
+        if (!notesSection) return;
+        
+        const notesInput = notesSection.querySelector('.notes-input');
+        const quantityDisplay = document.querySelector(`.quantity-btn[data-item-id="${itemId}"]`)?.parentElement?.querySelector('.quantity-display');
+        const quantity = quantityDisplay ? parseInt(quantityDisplay.textContent) : 1;
+        const notes = notesInput ? notesInput.value.trim() : '';
+        
+        updateCartItem(itemId, quantity, notes);
+    }
+    
+    function updateCartItem(itemId, quantity, notes = '') {
         fetch(`/cart/update/${itemId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
-            body: JSON.stringify({ quantity: quantity })
+            body: JSON.stringify({ 
+                quantity: quantity,
+                notes: notes || ''
+            })
         })
         .then(response => response.json())
         .then(data => {
@@ -229,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 Swal.fire({
                     title: 'Gagal!',
-                    text: 'Gagal mengupdate item',
+                    text: data.message || 'Gagal mengupdate item',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
