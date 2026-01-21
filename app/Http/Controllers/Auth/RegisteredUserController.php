@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -38,6 +39,9 @@ class RegisteredUserController extends Controller
             'address' => ['nullable','string','max:1000'],
         ]);
 
+        // Regenerate session SEBELUM login untuk mencegah page expired
+        $request->session()->regenerate();
+        
         // Ambil role 'user'
         $userRole = Role::where('name', 'user')->first();
         
@@ -50,7 +54,11 @@ class RegisteredUserController extends Controller
             'address' => $request->input('address'),
         ]);
 
+        // Login user dengan session yang sudah di-regenerate
         Auth::login($user);
+
+        // Regenerate CSRF token setelah login untuk sinkronisasi
+        $request->session()->regenerateToken();
 
         // KIRIM EMAIL VERIFIKASI - Menggunakan method sendEmailVerificationNotification()
         // Email verifikasi akan dikirim dengan template default Laravel
@@ -58,9 +66,7 @@ class RegisteredUserController extends Controller
         // Atau buat custom notification di: app/Notifications/VerifyEmail.php
         $user->sendEmailVerificationNotification();
 
-        // Regenerate session to prevent page expired
-        $request->session()->regenerate();
-
+        // Redirect langsung ke verification notice tanpa intended untuk menghindari session issues
         return redirect()->route('verification.notice');
     }
 }

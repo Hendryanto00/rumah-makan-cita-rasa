@@ -123,14 +123,58 @@
         let isSubmitting = false;
         
         if (form && submitButton) {
+            // Function to refresh CSRF token
+            async function refreshCSRFToken() {
+                try {
+                    const response = await fetch('{{ route("csrf-token") }}', {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        credentials: 'same-origin'
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const newToken = data.token;
+                        
+                        // Update meta tag
+                        const metaToken = document.head.querySelector('meta[name="csrf-token"]');
+                        if (metaToken) {
+                            metaToken.content = newToken;
+                        }
+                        
+                        // Update form token
+                        const csrfInput = form.querySelector('input[name="_token"]');
+                        if (csrfInput) {
+                            csrfInput.value = newToken;
+                        }
+                        
+                        return true;
+                    }
+                } catch (error) {
+                    console.error('Error refreshing CSRF token:', error);
+                }
+                return false;
+            }
+            
+            // Refresh token secara berkala (setiap 2 menit untuk mencegah expired)
+            setInterval(function() {
+                refreshCSRFToken();
+            }, 120000); // 2 menit
+            
             // Prevent double submit
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', async function(e) {
                 // Prevent double submit
                 if (isSubmitting) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
+                
+                // Refresh CSRF token sebelum submit untuk memastikan token masih valid
+                await refreshCSRFToken();
                 
                 isSubmitting = true;
                 
@@ -141,15 +185,7 @@
                 buttonText.classList.add('hidden');
                 buttonLoading.classList.remove('hidden');
                 
-                // Update CSRF token from meta tag if available
-                const metaToken = document.head.querySelector('meta[name="csrf-token"]');
-                const csrfInput = form.querySelector('input[name="_token"]');
-                if (metaToken && csrfInput) {
-                    csrfInput.value = metaToken.content;
-                }
-                
-                // Allow form to submit normally
-                // Form will submit with current CSRF token
+                // Allow form to submit normally dengan token yang sudah di-refresh
             });
             
             // Re-enable button if form validation fails (page reloads with errors)
