@@ -166,8 +166,6 @@ npm run build
 php artisan serve
 ```
 
-Akses aplikasi di: **http://localhost:8000**
-
 ---
 
 ## 📝 Akun Default (Setelah Seeder)
